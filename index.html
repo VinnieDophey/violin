@@ -147,7 +147,13 @@
   .watch small { display: block; margin-top: 0.8rem; font-family: var(--sans); font-size: 1rem; color: #ecd9b0; }
   .watch:hover { color: #fff; filter: brightness(1.12); }
 
-  .contact-link { font-family: var(--serif); font-size: clamp(1.7rem, 4.5vw, 3rem); line-height: 1.1; word-break: break-word; }
+  .contact-link { font-family: var(--serif); font-size: clamp(1.35rem, 3.2vw, 2.1rem); line-height: 1.15; word-break: break-word; }
+
+  .copy-btn {
+    font: inherit; font-weight: 500; color: var(--spruce); background: transparent; cursor: pointer;
+    border: 1px solid var(--gold); border-radius: 3px; padding: 0.55rem 1.1rem;
+  }
+  .copy-btn:hover { background: rgba(227, 169, 77, 0.14); color: var(--gold); }
 
   footer { padding: 2rem clamp(1.25rem, 5vw, 4rem) 3rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9rem; }
 
@@ -201,7 +207,7 @@
     <div class="body">
       <p>Vincent Pham is a 16-year-old violinist from Ottawa, Ontario, and a student in the International Baccalaureate program. He studies in the studio of Prof. Van der Sloot, is enrolled at the Conservatoire de musique de Gatineau and the University of Ottawa Pre-College Program, and holds the Associate Diploma (ARCT) from the Royal Conservatory of Music.</p>
       <p>In 2025 he placed third in the Strings 15 to 18 category of the Canadian Music Competition, competing at age 15. He has appeared as soloist and concertmaster with the Conservatoire de musique de Gatineau and the Vyhovskyi Senior Strings, and plays chamber music in a quartet that won the Aruna-Rupa Anantaraman Trophy for Senior Chamber in 2026.</p>
-      <p>For more than five years, Vincent has performed in concerts around Ottawa that have raised over $20,000 for local food banks and refugee initiatives.</p>
+      <p>For more than five years, Vincent has performed in concerts around Ottawa that have raised over $20,000 for local food banks and refugee initiatives. Away from music, he races dragon boats and is training for the Ottawa Marathon.</p>
     </div>
     <figure class="portrait">
       <img src="vincent.jpg" alt="Portrait of Vincent Pham" width="1000" height="1250">
@@ -301,7 +307,8 @@
   <section id="beyond">
     <h2>Beyond the violin</h2>
     <div class="body">
-      <p>Vincent also builds software and does research. He has made a multi-level tank game, a statistics and regression grapher, and a geometry calculator, and produced an educational video on the human immune response.</p>
+      <p>Vincent has raced dragon boats since 2025 and won gold and silver medals in August 2026. He is now training for the Ottawa Marathon in May 2027.</p>
+      <p>He also builds software and does research. He has made a multi-level tank game, a statistics and regression grapher, and a geometry calculator, and produced an educational video on the human immune response.</p>
       <p>
         <a href="https://vinniedophey.github.io/tank-game-m/" target="_blank" rel="noopener">Tank Domination</a>,
         <a href="https://vinniedophey.github.io/Statistics-calculator-and-grapher/" target="_blank" rel="noopener">Statistics calculator and grapher</a>,
@@ -315,7 +322,9 @@
     <h2>Contact</h2>
     <div class="body">
       <p>For concerts, collaborations and press, write to:</p>
-      <p><a class="contact-link" href="mailto:VincentPham1210@gmail.com">VincentPham1210@gmail.com</a></p>
+      <p class="contact-link" id="email-text">VincentPham1210 [at] gmail [dot] com</p>
+      <p class="muted">To protect against spam, the address is written out. Replace [at] with @ and [dot] with a period, or copy it with the button.</p>
+      <p><button type="button" class="copy-btn" id="copy-email">Copy email address</button> <span id="copy-status" class="muted" role="status"></span></p>
     </div>
   </section>
 </main>
@@ -325,6 +334,20 @@
 <script>
 (function () {
   document.getElementById('year').textContent = new Date().getFullYear();
+
+  // Email is never written in the page as a full address: it is assembled only when copied.
+  (function () {
+    var btn = document.getElementById('copy-email'), status = document.getElementById('copy-status');
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var addr = ['VincentPham1210', 'gmail', 'com'];
+      var text = addr[0] + String.fromCharCode(64) + addr[1] + String.fromCharCode(46) + addr[2];
+      var done = function (msg) { status.textContent = msg; setTimeout(function () { status.textContent = ''; }, 3000); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { done('Copied.'); }, function () { done('Copy failed. Please type the address.'); });
+      } else { done('Copy is not available. Please type the address.'); }
+    });
+  })();
 
   var notes = [
     { f: 196.00, w: 3.6 },  // G3
