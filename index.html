@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vincent Pham, Violinist</title>
+<meta name="description" content="Vincent Pham is a violinist from Ottawa: soloist, concertmaster and chamber musician. Awards, performances, videos and contact.">
+<meta property="og:title" content="Vincent Pham, Violinist">
+<meta property="og:description" content="Soloist, concertmaster and chamber musician from Ottawa. Hold a string to bow it.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ebony: #17100c;
+    --ebony-2: #211710;
+    --spruce: #f0e2c0;
+    --muted: #c9b48e;
+    --gold: #e3a94d;
+    --amber: #b4621f;
+    --varnish: #6b2a12;
+    --rule: rgba(240, 226, 192, 0.15);
+    --serif: "Instrument Serif", Georgia, "Times New Roman", serif;
+    --sans: "Hanken Grotesk", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--ebony); color: var(--spruce);
+    font-family: var(--sans); font-size: 1.0625rem; line-height: 1.65;
+    -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration-color: var(--gold); text-underline-offset: 0.22em; }
+  a:hover { color: var(--gold); }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+  /* Navigation */
+  .nav {
+    position: absolute; top: 0; left: 0; right: 0; z-index: 3;
+    display: flex; flex-wrap: wrap; gap: 0.5rem 1.75rem; justify-content: flex-end;
+    padding: 1.5rem clamp(1.25rem, 5vw, 4rem); font-size: 0.95rem;
+  }
+  .nav a { text-decoration: none; color: rgba(240, 226, 192, 0.78); }
+  .nav a:hover { color: var(--gold); }
+
+  /* Hero: varnish gradient with a playable fingerboard */
+  .hero {
+    position: relative;
+    min-height: 100vh; min-height: 100svh;
+    display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+    gap: clamp(1.5rem, 5vw, 5rem);
+    align-items: center;
+    padding: 6.5rem clamp(1.25rem, 5vw, 4rem) 0;
+    background:
+      radial-gradient(55% 70% at 76% 42%, rgba(255, 186, 96, 0.30), transparent 70%),
+      linear-gradient(105deg, #1f0a04 0%, #4a190b 40%, #8a3d15 74%, #b4621f 100%);
+    overflow: hidden;
+  }
+  .hero-text { align-self: end; padding-bottom: 5rem; }
+  .hero h1 {
+    font-family: var(--serif); font-weight: 400;
+    font-size: clamp(3.6rem, 10.5vw, 9.5rem);
+    line-height: 0.9; letter-spacing: -0.025em; margin: 0 0 1.6rem;
+    color: #fbf0d4;
+  }
+  .hero .tag { margin: 0; max-width: 32ch; font-size: 1.25rem; color: #ecd9b0; }
+  .hero .hint { margin: 1.6rem 0 0; font-family: var(--serif); font-style: italic; font-size: 1.25rem; color: var(--gold); }
+
+  .board {
+    position: relative; align-self: end;
+    height: min(76vh, 720px);
+    background:
+      repeating-linear-gradient(90deg, rgba(255,255,255,0.018) 0 2px, transparent 2px 7px),
+      linear-gradient(90deg, #0d0806, #1c120c 50%, #0d0806);
+    border-radius: 8px 8px 0 0;
+    box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.10), 0 40px 90px rgba(0, 0, 0, 0.5);
+  }
+  .board::before { /* the nut */
+    content: ""; position: absolute; left: 0; right: 0; top: 46px; height: 7px;
+    background: linear-gradient(#f4e8c8, #c9b48e);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+  }
+  .bridge {
+    position: absolute; left: 6%; right: 6%; bottom: 0; height: 52px;
+    background: linear-gradient(#d68a35, #8c4313 70%, #5e2a0d);
+    border-radius: 70px 70px 0 0 / 46px 46px 0 0;
+    box-shadow: 0 -4px 18px rgba(255, 170, 70, 0.25);
+  }
+  .strings-canvas, .keys { position: absolute; left: 8%; right: 8%; top: 58px; bottom: 52px; }
+  .strings-canvas { width: 84%; height: calc(100% - 110px); pointer-events: none; }
+  .keys { display: grid; grid-template-columns: repeat(4, 1fr); top: 0; bottom: 52px; }
+  .key {
+    all: unset; cursor: pointer; display: flex; justify-content: center; align-items: flex-start;
+    padding-top: 6px; touch-action: manipulation;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  }
+  .key span { font-family: var(--serif); font-style: italic; font-size: 1.7rem; line-height: 1; color: var(--muted); transition: color 0.15s; }
+  .key:hover span, .key.on span { color: var(--gold); }
+  .key:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; border-radius: 4px; }
+
+  /* Sections */
+  main section {
+    display: grid; grid-template-columns: minmax(130px, 1fr) minmax(0, 3.2fr);
+    gap: clamp(1rem, 4vw, 4rem);
+    padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 5vw, 4rem);
+    border-top: 1px solid var(--rule);
+  }
+  main section:nth-of-type(even) { background: var(--ebony-2); }
+  main h2 {
+    font-family: var(--serif); font-weight: 400; font-size: 2.2rem; line-height: 1.05;
+    margin: 0; position: sticky; top: 2rem; align-self: start;
+  }
+  .body { max-width: 64ch; }
+  .body p { margin: 0 0 1.15em; }
+  .body p:last-child { margin-bottom: 0; }
+
+  .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 360px); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+  .portrait { margin: 0; position: relative; }
+  .portrait img { display: block; width: 100%; height: auto; border-radius: 3px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); }
+  .portrait::after { content: ""; position: absolute; inset: 0; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(227, 169, 77, 0.35); pointer-events: none; }
+
+  .rep { margin: 0; max-width: 68ch; }
+  .rep dt { font-family: var(--serif); font-style: italic; font-size: 1.4rem; color: var(--gold); margin-top: 1.7rem; }
+  .rep dt:first-child { margin-top: 0; }
+  .rep dd { margin: 0.2rem 0 0; }
+
+  .ledger { max-width: 72ch; }
+  .ledger .row { display: grid; grid-template-columns: 9rem 1fr; gap: 1rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); }
+  .ledger .row:first-child { border-top: 0; padding-top: 0; }
+  .ledger h3 { margin: 0; font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1.55rem; line-height: 1.1; color: var(--gold); }
+  .ledger ul, .plain { list-style: none; margin: 0; padding: 0; }
+  .ledger li { padding: 0.3rem 0; }
+  .ledger li:first-child { padding-top: 0; }
+  .plain { max-width: 64ch; }
+  .plain li { padding: 0.8rem 0; border-bottom: 1px solid var(--rule); }
+  .plain li:first-child { padding-top: 0; }
+  .plain b { font-weight: 600; }
+  .muted { color: var(--muted); }
+
+  .watch {
+    display: block; max-width: 760px; text-decoration: none;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    background: linear-gradient(120deg, #3a150a, #7d3813);
+    border-radius: 6px;
+    font-family: var(--serif); font-size: clamp(1.7rem, 4vw, 2.6rem); line-height: 1.1; color: #fbf0d4;
+  }
+  .watch small { display: block; margin-top: 0.8rem; font-family: var(--sans); font-size: 1rem; color: #ecd9b0; }
+  .watch:hover { color: #fff; filter: brightness(1.12); }
+
+  .contact-link { font-family: var(--serif); font-size: clamp(1.7rem, 4.5vw, 3rem); line-height: 1.1; word-break: break-word; }
+
+  footer { padding: 2rem clamp(1.25rem, 5vw, 4rem) 3rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9rem; }
+
+  @media (max-width: 800px) {
+    .hero { grid-template-columns: 1fr; padding-top: 7.5rem; gap: 1.5rem; }
+    .hero-text { padding-bottom: 0; }
+    .board { height: 62vh; min-height: 380px; }
+    main section { grid-template-columns: 1fr; gap: 1.25rem; }
+    main h2 { position: static; }
+    .ledger .row { grid-template-columns: 1fr; gap: 0.4rem; }
+    .about-grid { grid-template-columns: 1fr; }
+    .portrait { order: -1; max-width: 340px; }
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="Main">
+  <a href="#about">About</a>
+  <a href="#training">Training</a>
+  <a href="#awards">Awards</a>
+  <a href="#stage">Stage</a>
+  <a href="#listen">Listen</a>
+  <a href="#contact">Contact</a>
+</nav>
+
+<header class="hero">
+  <div class="hero-text">
+    <h1>Vincent<br>Pham</h1>
+    <p class="tag">Violinist. Soloist, concertmaster and chamber musician from Ottawa.</p>
+    <p class="hint">Hold a string to bow it.</p>
+  </div>
+
+  <div class="board">
+    <canvas class="strings-canvas" id="strings" aria-hidden="true"></canvas>
+    <div class="keys" role="group" aria-label="Violin strings. Press and hold a string to bow it.">
+      <button class="key" aria-label="Bow the G string"><span>G</span></button>
+      <button class="key" aria-label="Bow the D string"><span>D</span></button>
+      <button class="key" aria-label="Bow the A string"><span>A</span></button>
+      <button class="key" aria-label="Bow the E string"><span>E</span></button>
+    </div>
+    <div class="bridge" aria-hidden="true"></div>
+  </div>
+</header>
+
+<main>
+  <section id="about">
+    <h2>About</h2>
+    <div class="about-grid">
+    <div class="body">
+      <p>Vincent Pham is a 16-year-old violinist from Ottawa, Ontario, and a student in the International Baccalaureate program. He studies in the studio of Prof. Van der Sloot, is enrolled at the Conservatoire de musique de Gatineau and the University of Ottawa Pre-College Program, and holds the Associate Diploma (ARCT) from the Royal Conservatory of Music.</p>
+      <p>In 2025 he placed third in the Strings 15 to 18 category of the Canadian Music Competition, competing at age 15. He has appeared as soloist and concertmaster with the Conservatoire de musique de Gatineau and the Vyhovskyi Senior Strings, and plays chamber music in a quartet that won the Aruna-Rupa Anantaraman Trophy for Senior Chamber in 2026.</p>
+      <p>For more than five years, Vincent has performed in concerts around Ottawa that have raised over $20,000 for local food banks and refugee initiatives.</p>
+    </div>
+    <figure class="portrait">
+      <img src="vincent.jpg" alt="Portrait of Vincent Pham" width="1000" height="1250">
+    </figure>
+    </div>
+  </section>
+
+  <section id="training">
+    <h2>Training</h2>
+    <dl class="rep">
+      <dt>Studio</dt>
+      <dd>Prof. Van der Sloot, University of Ottawa. Solo and chamber principal violinist in the University of Ottawa Pre-College Program.</dd>
+      <dt>Conservatoire de musique de Gatineau</dt>
+      <dd>Studies with Marjolaine Lambert and Tobie Slippert. Soloist and concertmaster, and the youngest musician ever invited into the college-level chamber groups.</dd>
+      <dt>Royal Conservatory of Music</dt>
+      <dd>Associate Diploma (ARCT) in Violin Performance, 2025.</dd>
+      <dt>Summer programs</dt>
+      <dd>Juilliard Summer Music, New York City. Domaine Forget de Charlevoix. University of Ottawa Summer String Academy. Masterclass in Austria.</dd>
+      <dt>Masterclasses</dt>
+      <dd>Andrew Wan, Jonathan Crow, Karen Gomyo, Timothy Chooi, Kerson Leong, Yosuke Kawasaki, Ute Hasenauer, Marjolaine Lambert, Gwen Hoebig and others.</dd>
+      <dt>Ensembles</dt>
+      <dd>Concertmaster of the Vyhovskyi Senior Strings Ensemble, and concertmaster with thirteen string orchestras.</dd>
+    </dl>
+  </section>
+
+  <section id="awards">
+    <h2>Awards</h2>
+    <div class="ledger">
+      <div class="row">
+        <h3>2025 to 2026</h3>
+        <ul>
+          <li>Canadian Music Competition, Strings 15 to 18: 3rd place</li>
+          <li>Canadian International Music Festival, Solo: 1st place</li>
+          <li>Sherbrooke Music Competition, Solo 12 to 16: 1st place</li>
+          <li>Ontario Music Festival Association, Strings: 2nd place with scholarship</li>
+          <li>NCR Kiwanis Music Festival: Kinsmen Club Shield Trophy, Open Strings Solo, 1st place (2025 and again in 2026)</li>
+          <li>Aruna-Rupa Anantaraman Trophy, Senior Chamber, with his quartet (2026)</li>
+          <li>Conservatoire de musique de Gatineau, Bravissimo Competition: winner</li>
+          <li>Laurentian Chapter I.O.D.E. Marion Ruddick Award and Glebe St James Award for Provincial Rep scholarships</li>
+        </ul>
+      </div>
+      <div class="row">
+        <h3>2024 to 2025</h3>
+        <ul>
+          <li>Ottawa Kiwanis Music Festival: Best Musicianship Trophy across all string divisions</li>
+          <li>Ottawa Kiwanis Music Festival: 1st place in all three ARCT-level classes (Violin Concerto, Sonata and List C)</li>
+          <li>Canadian International Music Festival, Solo: 1st place</li>
+          <li>Ontario Music Festival Association provincial competition: 3rd place with scholarship</li>
+          <li>Laurentian Junior Music Club: Best Strings Player Trophy</li>
+          <li>Conservatoire de musique de Gatineau: top string student scholarship</li>
+        </ul>
+      </div>
+      <div class="row">
+        <h3>2023</h3>
+        <ul>
+          <li>Conservatoire de musique de Gatineau, Bravissimo Competition: winner</li>
+          <li>Ontario Music Festival Association: 2nd place with scholarship (Upper Strings), 1st place with scholarship (Upper String Duets)</li>
+          <li>Ottawa Kiwanis Music Festival: 1st place with the Jackie Morrison scholarship</li>
+          <li>Laurentian Junior Music Club: Edith Orton Special Achievement Trophy and scholarship</li>
+        </ul>
+      </div>
+      <div class="row">
+        <h3>2022</h3>
+        <ul>
+          <li>Bursaries from the Young String Performers' Foundation and the Conservatoire de musique du Quebec</li>
+          <li>Musicians' Association of Ottawa-Gatineau scholarship for violin performance at the Ottawa Kiwanis Music Festival</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="stage">
+    <h2>On stage</h2>
+    <ul class="plain">
+      <li><b>Carnegie Hall</b>, New York</li>
+      <li><b>Concert halls in Austria</b>, including an international masterclass</li>
+      <li><b>National Arts Centre</b>, Ottawa</li>
+      <li><b>Domaine Forget de Charlevoix</b>, Sherbrooke and Montreal</li>
+      <li><b>ChamberFest</b>, selected as a Rising Star</li>
+      <li><b>Ottawa Kiwanis Music Festival Highlight Concert</b>, Algonquin Commons Theatre</li>
+      <li><b>ORMTA First Class Honors Concert</b></li>
+      <li><b>CBC</b>, featured in a program broadcast nationally in October 2026</li>
+      <li>Performances for the Mayor of Ottawa and the Ambassador of Poland</li>
+    </ul>
+  </section>
+
+  <section id="listen">
+    <h2>Listen</h2>
+    <div>
+      <a class="watch" href="https://www.youtube.com/@VincentViolin" target="_blank" rel="noopener">
+        Watch Vincent on YouTube
+        <small>@VincentViolin</small>
+      </a>
+    </div>
+  </section>
+
+  <section id="beyond">
+    <h2>Beyond the violin</h2>
+    <div class="body">
+      <p>Vincent also builds software and does research. He has made a multi-level tank game, a statistics and regression grapher, and a geometry calculator, and produced an educational video on the human immune response.</p>
+      <p>
+        <a href="https://vinniedophey.github.io/tank-game-m/" target="_blank" rel="noopener">Tank Domination</a>,
+        <a href="https://vinniedophey.github.io/Statistics-calculator-and-grapher/" target="_blank" rel="noopener">Statistics calculator and grapher</a>,
+        <a href="https://vinniedophey.github.io/Geometry-calculator/" target="_blank" rel="noopener">Geometry calculator</a>,
+        <a href="https://youtu.be/9V2vQo6QD-g" target="_blank" rel="noopener">Immune response video</a>
+      </p>
+    </div>
+  </section>
+
+  <section id="contact">
+    <h2>Contact</h2>
+    <div class="body">
+      <p>For concerts, collaborations and press, write to:</p>
+      <p><a class="contact-link" href="mailto:VincentPham1210@gmail.com">VincentPham1210@gmail.com</a></p>
+    </div>
+  </section>
+</main>
+
+<footer>© <span id="year">2026</span> Vincent Pham</footer>
+
+<script>
+(function () {
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  var notes = [
+    { f: 196.00, w: 3.6 },  // G3
+    { f: 293.66, w: 2.9 },  // D4
+    { f: 440.00, w: 2.2 },  // A4
+    { f: 659.25, w: 1.6 }   // E5
+  ];
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var canvas = document.getElementById('strings');
+  var g = canvas.getContext('2d');
+  var keys = Array.prototype.slice.call(document.querySelectorAll('.key'));
+  var state = notes.map(function () { return { a: 0, phase: Math.random() * 6.28, bow: false }; });
+  var raf = null, last = 0;
+
+  /* ---------- drawing ---------- */
+  function resize() {
+    var dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(canvas.clientWidth * dpr);
+    canvas.height = Math.round(canvas.clientHeight * dpr);
+    g.setTransform(dpr, 0, 0, dpr, 0, 0);
+    draw();
+  }
+  function mix(a, b, t) { return Math.round(a + (b - a) * t); }
+  function draw() {
+    var W = canvas.clientWidth, H = canvas.clientHeight;
+    g.clearRect(0, 0, W, H);
+    for (var i = 0; i < notes.length; i++) {
+      var s = state[i], x = (i + 0.5) / notes.length * W;
+      var amp = reduce ? 0 : s.a * (7 + i * 1.6);
+      var col = 'rgb(' + mix(217, 255, s.a) + ',' + mix(197, 216, s.a) + ',' + mix(156, 143, s.a) + ')';
+      if (s.a > 0.02 && !reduce) { // soft blur envelope
+        g.lineWidth = notes[i].w * 1.4;
+        g.strokeStyle = 'rgba(255,214,140,' + (0.16 * s.a) + ')';
+        [1, -1].forEach(function (sign) {
+          g.beginPath();
+          for (var y = 0; y <= H; y += 6) g.lineTo(x + sign * Math.sin(Math.PI * y / H) * amp, y);
+          g.stroke();
+        });
+      }
+      g.lineWidth = notes[i].w;
+      g.strokeStyle = col;
+      g.shadowColor = 'rgba(255,200,110,' + s.a + ')';
+      g.shadowBlur = 16 * s.a;
+      g.beginPath();
+      for (var yy = 0; yy <= H; yy += 6) {
+        var u = yy / H;
+        var d = Math.sin(Math.PI * u) * amp * Math.sin(s.phase) +
+                0.3 * Math.sin(2 * Math.PI * u) * amp * Math.sin(s.phase * 2 + 1);
+        g.lineTo(x + d, yy);
+      }
+      g.stroke();
+      g.shadowBlur = 0;
+    }
+  }
+  function frame(t) {
+    var dt = Math.min(0.05, (t - last) / 1000 || 0.016);
+    last = t;
+    var moving = false;
+    state.forEach(function (s, i) {
+      if (s.bow) s.a += (1 - s.a) * Math.min(1, dt * 10);
+      else s.a *= Math.pow(0.04, dt);
+      if (!s.bow && s.a < 0.004) s.a = 0;
+      if (s.bow || s.a > 0) moving = true;
+      s.phase += dt * Math.PI * 2 * (10 + i * 2.5);
+    });
+    draw();
+    raf = moving ? requestAnimationFrame(frame) : null;
+  }
+  function kick() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
+
+  /* ---------- sound: a bowed string with vibrato and a little hall reverb ---------- */
+  var ac, master, voices = [null, null, null, null];
+  function audio() {
+    if (!ac) {
+      ac = new (window.AudioContext || window.webkitAudioContext)();
+      master = ac.createGain(); master.gain.value = 0.9;
+      var comp = ac.createDynamicsCompressor();
+      master.connect(comp); comp.connect(ac.destination);
+      var len = Math.floor(ac.sampleRate * 2.4), ir = ac.createBuffer(2, len, ac.sampleRate);
+      for (var c = 0; c < 2; c++) {
+        var d = ir.getChannelData(c);
+        for (var n = 0; n < len; n++) d[n] = (Math.random() * 2 - 1) * Math.pow(1 - n / len, 2.6);
+      }
+      var conv = ac.createConvolver(); conv.buffer = ir;
+      var wet = ac.createGain(); wet.gain.value = 0.35;
+      master.connect(conv); conv.connect(wet); wet.connect(comp);
+    }
+    if (ac.state === 'suspended') ac.resume();
+    return ac;
+  }
+  function startVoice(i) {
+    if (voices[i]) return;
+    try {
+      var a = audio(), t = a.currentTime, f = notes[i].f;
+      var out = a.createGain();
+      out.gain.setValueAtTime(0.0001, t);
+      out.gain.exponentialRampToValueAtTime(0.26, t + 0.14);
+      var lp = a.createBiquadFilter();
+      lp.type = 'lowpass'; lp.Q.value = 0.7;
+      lp.frequency.setValueAtTime(f * 9, t);
+      lp.frequency.exponentialRampToValueAtTime(f * 4, t + 0.5);
+      var oscs = [-5, 4].map(function (cents) {
+        var o = a.createOscillator(), gn = a.createGain();
+        o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = cents; gn.gain.value = 0.5;
+        o.connect(gn); gn.connect(lp);
+        return o;
+      });
+      var lfo = a.createOscillator(), depth = a.createGain();
+      lfo.frequency.value = 5.3;
+      depth.gain.setValueAtTime(0, t);
+      depth.gain.linearRampToValueAtTime(0, t + 0.35);
+      depth.gain.linearRampToValueAtTime(f * 0.0045, t + 1.1);
+      lfo.connect(depth);
+      oscs.forEach(function (o) { depth.connect(o.frequency); });
+      lp.connect(out); out.connect(master);
+      oscs.forEach(function (o) { o.start(t); });
+      lfo.start(t);
+      voices[i] = { oscs: oscs, lfo: lfo, out: out };
+    } catch (e) { /* audio unavailable: visuals still work */ }
+  }
+  function stopVoice(i) {
+    var v = voices[i]; if (!v) return;
+    var t = ac.currentTime;
+    v.out.gain.cancelScheduledValues(t);
+    v.out.gain.setValueAtTime(Math.max(v.out.gain.value, 0.0001), t);
+    v.out.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
+    v.oscs.concat([v.lfo]).forEach(function (o) { o.stop(t + 0.5); });
+    voices[i] = null;
+  }
+
+  /* ---------- interaction ---------- */
+  function down(i) { state[i].bow = true; keys[i].classList.add('on'); startVoice(i); kick(); }
+  function up(i) { state[i].bow = false; keys[i].classList.remove('on'); stopVoice(i); kick(); }
+
+  keys.forEach(function (btn, i) {
+    btn.addEventListener('pointerdown', function (e) {
+      e.preventDefault();
+      try { btn.setPointerCapture(e.pointerId); } catch (err) {}
+      down(i);
+    });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (ev) {
+      btn.addEventListener(ev, function () { up(i); });
+    });
+    btn.addEventListener('keydown', function (e) {
+      if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); down(i); }
+    });
+    btn.addEventListener('keyup', function (e) {
+      if (e.key === 'Enter' || e.key === ' ') up(i);
+    });
+    btn.addEventListener('blur', function () { up(i); });
+    btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+  });
+
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
+  window.addEventListener('resize', resize);
+  resize();
+})();
+</script>
+</body>
+</html>
