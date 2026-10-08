@@ -322,7 +322,7 @@
     <h2>Contact</h2>
     <div class="body">
       <p>For concerts, collaborations and press, write to:</p>
-      <p class="contact-link" id="email-text">VincentPham1210 [at] gmail [dot] com</p>
+      <p class="contact-link" id="email-text"> [at] gmail [dot] com</p>
       <p class="muted">To protect against spam, the address is written out. Replace [at] with @ and [dot] with a period, or copy it with the button.</p>
       <p><button type="button" class="copy-btn" id="copy-email">Copy email address</button> <span id="copy-status" class="muted" role="status"></span></p>
     </div>
@@ -340,7 +340,7 @@
     var btn = document.getElementById('copy-email'), status = document.getElementById('copy-status');
     if (!btn) return;
     btn.addEventListener('click', function () {
-      var addr = ['VincentPham1210', 'gmail', 'com'];
+      var addr = ['', 'gmail', 'com'];
       var text = addr[0] + String.fromCharCode(64) + addr[1] + String.fromCharCode(46) + addr[2];
       var done = function (msg) { status.textContent = msg; setTimeout(function () { status.textContent = ''; }, 3000); };
       if (navigator.clipboard && navigator.clipboard.writeText) {
