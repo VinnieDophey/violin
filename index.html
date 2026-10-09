@@ -5,8 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Vincent Pham, Violinist</title>
 <meta name="description" content="Vincent Pham is a violinist from Ottawa: soloist, concertmaster and chamber musician. Awards, performances, videos and contact.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%BB%3C/text%3E%3C/svg%3E">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://vincentpham.com/">
+<meta property="og:image" content="https://vincentpham.com/vincent.jpg">
+<meta name="twitter:card" content="summary_large_image">
 <meta property="og:title" content="Vincent Pham, Violinist">
-<meta property="og:description" content="Soloist, concertmaster and chamber musician from Ottawa. Hold a string to bow it.">
+<meta property="og:description" content="Soloist, concertmaster and chamber musician from Ottawa. Awards, performances and a playable violin.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
@@ -68,35 +73,39 @@
 
   .board {
     position: relative; align-self: end;
-    height: min(76vh, 720px);
-    background:
-      repeating-linear-gradient(90deg, rgba(255,255,255,0.018) 0 2px, transparent 2px 7px),
-      linear-gradient(90deg, #0d0806, #1c120c 50%, #0d0806);
-    border-radius: 8px 8px 0 0;
-    box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.10), 0 40px 90px rgba(0, 0, 0, 0.5);
+    height: min(80vh, 700px);
+    background: radial-gradient(90% 70% at 50% 35%, #2b140b 0%, #150b06 70%, #0d0603 100%);
+    border-radius: 10px;
+    box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.10), 0 30px 70px rgba(0, 0, 0, 0.45);
+    overflow: hidden;
   }
-  .board::before { /* the nut */
-    content: ""; position: absolute; left: 0; right: 0; top: 46px; height: 7px;
-    background: linear-gradient(#f4e8c8, #c9b48e);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
-  }
-  .bridge {
-    position: absolute; left: 6%; right: 6%; bottom: 0; height: 52px;
-    background: linear-gradient(#d68a35, #8c4313 70%, #5e2a0d);
-    border-radius: 70px 70px 0 0 / 46px 46px 0 0;
-    box-shadow: 0 -4px 18px rgba(255, 170, 70, 0.25);
-  }
-  .strings-canvas, .keys { position: absolute; left: 8%; right: 8%; top: 58px; bottom: 52px; }
-  .strings-canvas { width: 84%; height: calc(100% - 110px); pointer-events: none; }
-  .keys { display: grid; grid-template-columns: repeat(4, 1fr); top: 0; bottom: 52px; }
-  .key {
-    all: unset; cursor: pointer; display: flex; justify-content: center; align-items: flex-start;
-    padding-top: 6px; touch-action: manipulation;
+  .board canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
+  .play {
+    position: absolute; touch-action: none; cursor: pointer;
     -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
   }
-  .key span { font-family: var(--serif); font-style: italic; font-size: 1.7rem; line-height: 1; color: var(--muted); transition: color 0.15s; }
+  .key {
+    all: unset; position: absolute; width: 28px; height: 40px;
+    display: grid; place-items: center; border-radius: 50%; cursor: pointer; touch-action: none;
+    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+  }
+  .key span { font-family: var(--serif); font-style: italic; font-size: 1.35rem; line-height: 1; color: var(--muted); transition: color 0.15s; }
   .key:hover span, .key.on span { color: var(--gold); }
-  .key:focus-visible { outline: 2px solid var(--gold); outline-offset: -3px; border-radius: 4px; }
+  .key:focus-visible { outline: 2px solid var(--gold); outline-offset: 0; }
+
+  .hero-links { margin: 1.8rem 0 0; display: flex; flex-wrap: wrap; gap: 0.8rem; }
+  a.copy-btn { display: inline-block; text-decoration: none; color: #fbf0d4; }
+  .hero-photo { margin: 0; align-self: end; height: min(76vh, 720px); position: relative; }
+  .hero-photo img {
+    display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%;
+    border-radius: 10px 10px 0 0;
+    box-shadow: 0 40px 90px rgba(0, 0, 0, 0.5);
+  }
+  .hero-photo::after { content: ""; position: absolute; inset: 0; border-radius: 10px 10px 0 0; box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.28); pointer-events: none; }
+  .violin .hint { margin: 0 0 0.7rem; font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--gold); }
+  .violin-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.8rem; min-height: 2.6rem; }
+  .readout { margin: 0; font-family: var(--serif); font-size: 1.9rem; line-height: 1.1; color: #fbf0d4; }
+  .violin-toggle { display: none; }
 
   /* Sections */
   main section {
@@ -114,7 +123,7 @@
   .body p { margin: 0 0 1.15em; }
   .body p:last-child { margin-bottom: 0; }
 
-  .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(220px, 360px); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+  .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 420px); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
   .portrait { margin: 0; position: relative; }
   .portrait img { display: block; width: 100%; height: auto; border-radius: 3px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); }
   .portrait::after { content: ""; position: absolute; inset: 0; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(227, 169, 77, 0.35); pointer-events: none; }
@@ -158,9 +167,13 @@
   footer { padding: 2rem clamp(1.25rem, 5vw, 4rem) 3rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9rem; }
 
   @media (max-width: 800px) {
-    .hero { grid-template-columns: 1fr; padding-top: 7.5rem; gap: 1.5rem; }
+    .hero { grid-template-columns: 1fr; padding-top: 7.5rem; gap: 1.5rem; min-height: auto; }
     .hero-text { padding-bottom: 0; }
-    .board { height: 62vh; min-height: 380px; }
+    .board { height: 66vh; min-height: 440px; }
+    .hero-photo { height: 58vh; min-height: 360px; max-height: 560px; }
+    .violin-toggle { display: inline-block; }
+    .violin-body { display: none; margin-top: 1rem; }
+    .violin.open .violin-body { display: block; }
     main section { grid-template-columns: 1fr; gap: 1.25rem; }
     main h2 { position: static; }
     .ledger .row { grid-template-columns: 1fr; gap: 0.4rem; }
@@ -185,19 +198,14 @@
   <div class="hero-text">
     <h1>Vincent<br>Pham</h1>
     <p class="tag">Violinist. Soloist, concertmaster and chamber musician from Ottawa.</p>
-    <p class="hint">Hold a string to bow it.</p>
+    <p class="hero-links">
+      <a class="copy-btn" href="#listen">Watch and listen</a>
+      <a class="copy-btn" href="#about">Play the violin</a>
+    </p>
   </div>
-
-  <div class="board">
-    <canvas class="strings-canvas" id="strings" aria-hidden="true"></canvas>
-    <div class="keys" role="group" aria-label="Violin strings. Press and hold a string to bow it.">
-      <button class="key" aria-label="Bow the G string"><span>G</span></button>
-      <button class="key" aria-label="Bow the D string"><span>D</span></button>
-      <button class="key" aria-label="Bow the A string"><span>A</span></button>
-      <button class="key" aria-label="Bow the E string"><span>E</span></button>
-    </div>
-    <div class="bridge" aria-hidden="true"></div>
-  </div>
+  <figure class="hero-photo">
+    <img src="vincent.jpg" alt="Portrait of Vincent Pham" width="1000" height="1250">
+  </figure>
 </header>
 
 <main>
@@ -209,9 +217,25 @@
       <p>In 2025 he placed third in the Strings 15 to 18 category of the Canadian Music Competition, competing at age 15. He has appeared as soloist and concertmaster with the Conservatoire de musique de Gatineau and the Vyhovskyi Senior Strings, and plays chamber music in a quartet that won the Aruna-Rupa Anantaraman Trophy for Senior Chamber in 2026.</p>
       <p>For more than five years, Vincent has performed in concerts around Ottawa that have raised over $20,000 for local food banks and refugee initiatives. Away from music, he races dragon boats and is training for the Ottawa Marathon.</p>
     </div>
-    <figure class="portrait">
-      <img src="vincent.jpg" alt="Portrait of Vincent Pham" width="1000" height="1250">
-    </figure>
+    <div class="violin" id="violin">
+      <button type="button" class="copy-btn violin-toggle" id="violin-toggle" aria-expanded="false" aria-controls="violin-body">Play the violin</button>
+      <div class="violin-body" id="violin-body">
+        <p class="hint">Hold a string to bow it. Slide up and down to change the note.</p>
+        <div class="violin-top">
+          <p class="readout" id="readout" role="status" aria-live="polite"></p>
+          <button type="button" class="copy-btn snap" id="snap" aria-pressed="true">Snap to notes: on</button>
+        </div>
+        <div class="board" id="board">
+          <canvas id="strings" aria-hidden="true"></canvas>
+          <div class="play" id="play" role="group" aria-label="Violin strings. Press and hold a string to bow it. Drag up and down to change the note. With the keyboard, hold Enter on a string and use the arrow keys to change the note.">
+            <button class="key" aria-label="G string"><span>G</span></button>
+            <button class="key" aria-label="D string"><span>D</span></button>
+            <button class="key" aria-label="A string"><span>A</span></button>
+            <button class="key" aria-label="E string"><span>E</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
     </div>
   </section>
 
@@ -322,7 +346,7 @@
     <h2>Contact</h2>
     <div class="body">
       <p>For concerts, collaborations and press, write to:</p>
-      <p class="contact-link" id="email-text"> [at] gmail [dot] com</p>
+      <p class="contact-link" id="email-text">VincentPham1210 [at] gmail [dot] com</p>
       <p class="muted">To protect against spam, the address is written out. Replace [at] with @ and [dot] with a period, or copy it with the button.</p>
       <p><button type="button" class="copy-btn" id="copy-email">Copy email address</button> <span id="copy-status" class="muted" role="status"></span></p>
     </div>
@@ -335,175 +359,491 @@
 (function () {
   document.getElementById('year').textContent = new Date().getFullYear();
 
-  // Email is never written in the page as a full address: it is assembled only when copied.
-  (function () {
-    var btn = document.getElementById('copy-email'), status = document.getElementById('copy-status');
-    if (!btn) return;
-    btn.addEventListener('click', function () {
-      var addr = ['', 'gmail', 'com'];
-      var text = addr[0] + String.fromCharCode(64) + addr[1] + String.fromCharCode(46) + addr[2];
-      var done = function (msg) { status.textContent = msg; setTimeout(function () { status.textContent = ''; }, 3000); };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(text).then(function () { done('Copied.'); }, function () { done('Copy failed. Please type the address.'); });
-      } else { done('Copy is not available. Please type the address.'); }
-    });
-  })();
+  // The email address is never written in the page in full: it is assembled only when copied.
+  var btn = document.getElementById('copy-email'), status = document.getElementById('copy-status');
+  if (btn) btn.addEventListener('click', function () {
+    var addr = ['VincentPham1210', 'gmail', 'com'];
+    var text = addr[0] + String.fromCharCode(64) + addr[1] + String.fromCharCode(46) + addr[2];
+    var done = function (msg) { status.textContent = msg; setTimeout(function () { status.textContent = ''; }, 3000); };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function () { done('Copied.'); }, function () { done('Copy failed. Please type the address.'); });
+    } else { done('Copy is not available. Please type the address.'); }
+  });
+})();
 
-  var notes = [
-    { f: 196.00, w: 3.6 },  // G3
-    { f: 293.66, w: 2.9 },  // D4
-    { f: 440.00, w: 2.2 },  // A4
-    { f: 659.25, w: 1.6 }   // E5
-  ];
-  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var canvas = document.getElementById('strings');
+/* ================= The violin ================= */
+(function () {
+  var board = document.getElementById('board'), canvas = document.getElementById('strings'), play = document.getElementById('play');
   var g = canvas.getContext('2d');
-  var keys = Array.prototype.slice.call(document.querySelectorAll('.key'));
-  var state = notes.map(function () { return { a: 0, phase: Math.random() * 6.28, bow: false }; });
-  var raf = null, last = 0;
+  var keys = [].slice.call(play.querySelectorAll('.key'));
+  var readout = document.getElementById('readout'), snapBtn = document.getElementById('snap');
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var NAMES = ['C', 'C\u266F', 'D', 'D\u266F', 'E', 'F', 'F\u266F', 'G', 'G\u266F', 'A', 'A\u266F', 'B'];
+  var MIDI0 = [55, 62, 69, 76];          // G3 D4 A4 E5
+  var WIDTH = [3.6, 2.9, 2.2, 1.6];
+  var MAXU = 0.75, UFB = 0.83, MAXN = 24; // two octaves above the open string
+  var snap = true;
+  var state = MIDI0.map(function () { return { a: 0, phase: Math.random() * 6.28, owner: null, n: 0, uf: 0, kn: 0 }; });
+  var G = {};
+  var bg = document.createElement('canvas'), bgc = bg.getContext('2d');
+  var raf = null, last = 0, bowOff = 0, bowT = 0;
 
-  /* ---------- drawing ---------- */
-  function resize() {
-    var dpr = window.devicePixelRatio || 1;
-    canvas.width = Math.round(canvas.clientWidth * dpr);
-    canvas.height = Math.round(canvas.clientHeight * dpr);
-    g.setTransform(dpr, 0, 0, dpr, 0, 0);
-    draw();
+  /* ---------- geometry (everything scales from the string length L) ---------- */
+  function layout() {
+    var W = board.clientWidth, H = board.clientHeight, top = 62, pad = 18;
+    var L = Math.min((H - top - pad) / 1.49, (W - 28) / 0.72);
+    G = { W: W, H: H, L: L, y0: top, yB: top + L, yJ: top + 0.40 * L, Lb: 1.09 * L, cx: W / 2 };
   }
+  function sp(u) { return G.L * (0.058 + 0.016 * u); }
+  function sx(i, u) { return G.cx + (i - 1.5) * sp(u); }
+  function fbHalf(u) { u = Math.max(u, 0); return 1.5 * sp(u) + G.L * (0.032 + 0.010 * u); }
+  function endY(i) { var dx = (i - 1.5) * sp(1), hb = 0.135 * G.L; return G.yB + 0.02 * G.L * (dx / hb) * (dx / hb); }
+  function uFromN(n) { return 1 - Math.pow(2, -n / 12); }
+  function hz(i, n) { return 440 * Math.pow(2, (MIDI0[i] + n - 69) / 12); }
+  function noteName(i, n) { var m = MIDI0[i] + Math.round(n); return NAMES[((m % 12) + 12) % 12] + (Math.floor(m / 12) - 1); }
+
+  /* ---------- the static instrument, drawn once per size ---------- */
+  function drawStatic() {
+    var c = bgc, W = G.W, H = G.H, L = G.L, cx = G.cx, y0 = G.y0, yB = G.yB, yJ = G.yJ, Lb = G.Lb, i;
+    c.clearRect(0, 0, W, H);
+    var hn = fbHalf(0.40) + L * 0.016;
+
+    function body(sc) {
+      c.save();
+      if (sc) { c.translate(cx, yJ + 0.5 * Lb); c.scale(sc, sc); c.translate(-cx, -(yJ + 0.5 * Lb)); }
+      var X = function (v) { return cx + v; }, Y = function (t) { return yJ + t * Lb; };
+      c.beginPath();
+      c.moveTo(X(hn), Y(0));
+      c.bezierCurveTo(X(hn + 0.07 * L), Y(0.03), X(0.29 * L), Y(0.10), X(0.29 * L), Y(0.26));
+      c.bezierCurveTo(X(0.29 * L), Y(0.38), X(0.205 * L), Y(0.41), X(0.205 * L), Y(0.52));
+      c.bezierCurveTo(X(0.205 * L), Y(0.64), X(0.36 * L), Y(0.64), X(0.36 * L), Y(0.80));
+      c.bezierCurveTo(X(0.36 * L), Y(0.95), X(0.15 * L), Y(1.0), X(0), Y(1.0));
+      c.bezierCurveTo(X(-0.15 * L), Y(1.0), X(-0.36 * L), Y(0.95), X(-0.36 * L), Y(0.80));
+      c.bezierCurveTo(X(-0.36 * L), Y(0.64), X(-0.205 * L), Y(0.64), X(-0.205 * L), Y(0.52));
+      c.bezierCurveTo(X(-0.205 * L), Y(0.41), X(-0.29 * L), Y(0.38), X(-0.29 * L), Y(0.26));
+      c.bezierCurveTo(X(-0.29 * L), Y(0.10), X(-(hn + 0.07 * L)), Y(0.03), X(-hn), Y(0));
+      c.closePath();
+      c.restore();
+    }
+
+    // varnished spruce top
+    body(0);
+    c.save();
+    c.shadowColor = 'rgba(0,0,0,0.55)'; c.shadowBlur = 26; c.shadowOffsetY = 10;
+    var gr = c.createRadialGradient(cx, yJ + 0.55 * Lb, 0.05 * L, cx, yJ + 0.55 * Lb, 0.75 * Lb);
+    gr.addColorStop(0, '#d98a35'); gr.addColorStop(0.45, '#a8501a'); gr.addColorStop(1, '#4b1b0a');
+    c.fillStyle = gr; c.fill();
+    c.restore();
+
+    // wood grain and sheen, clipped to the body
+    c.save(); body(0); c.clip();
+    for (var k = -34; k <= 34; k++) {
+      var f = (k < 0 ? -1 : 1) * Math.pow(Math.abs(k) / 34, 1.35) * 0.46 * L;
+      c.strokeStyle = 'rgba(45,14,4,' + (0.07 + (Math.abs(k * 7) % 3 === 0 ? 0.05 : 0)) + ')';
+      c.lineWidth = 0.7 + (Math.abs(k * 13) % 5 === 0 ? 0.8 : 0);
+      c.beginPath(); c.moveTo(cx + f * 0.92, yJ);
+      c.bezierCurveTo(cx + f, yJ + 0.3 * Lb, cx + f * 1.04, yJ + 0.7 * Lb, cx + f * 0.96, yJ + Lb);
+      c.stroke();
+    }
+    var sh = c.createRadialGradient(cx - 0.14 * L, yJ + 0.30 * Lb, 2, cx - 0.14 * L, yJ + 0.30 * Lb, 0.55 * L);
+    sh.addColorStop(0, 'rgba(255,230,180,0.30)'); sh.addColorStop(1, 'rgba(255,230,180,0)');
+    c.fillStyle = sh; c.fillRect(0, yJ, W, Lb);
+    c.restore();
+
+    // purfling and edge
+    body(0.955); c.strokeStyle = '#160805'; c.lineWidth = 2.4; c.stroke();
+    body(0.945); c.strokeStyle = 'rgba(240,226,192,0.45)'; c.lineWidth = 0.9; c.stroke();
+    body(0); c.strokeStyle = 'rgba(20,8,3,0.85)'; c.lineWidth = 2.2; c.stroke();
+
+    // f-holes
+    [-1, 1].forEach(function (s) {
+      var xc = cx + s * 0.15 * L;
+      var p0 = [xc + s * 0.010 * L, yB - 0.125 * L], p1 = [xc - s * 0.030 * L, yB - 0.06 * L],
+          p2 = [xc + s * 0.030 * L, yB + 0.05 * L], p3 = [xc - s * 0.004 * L, yB + 0.125 * L];
+      c.strokeStyle = '#0a0403'; c.lineWidth = Math.max(3.2, 0.0085 * L); c.lineCap = 'round';
+      c.beginPath(); c.moveTo(p0[0], p0[1]); c.bezierCurveTo(p1[0], p1[1], p2[0], p2[1], p3[0], p3[1]); c.stroke();
+      c.fillStyle = '#0a0403';
+      c.beginPath(); c.arc(p0[0], p0[1], 0.011 * L, 0, 6.3); c.fill();
+      c.beginPath(); c.arc(p3[0], p3[1], 0.015 * L, 0, 6.3); c.fill();
+    });
+
+    // tailpiece and the strings that run to it
+    var tt = yB + 0.10 * L, tb = yB + 0.40 * L;
+    c.save();
+    c.shadowColor = 'rgba(0,0,0,0.5)'; c.shadowBlur = 8; c.shadowOffsetY = 4;
+    var tg = c.createLinearGradient(cx - 0.062 * L, 0, cx + 0.062 * L, 0);
+    tg.addColorStop(0, '#0a0503'); tg.addColorStop(0.5, '#2a1a10'); tg.addColorStop(1, '#0a0503');
+    c.fillStyle = tg;
+    c.beginPath(); c.moveTo(cx - 0.062 * L, tt); c.quadraticCurveTo(cx, tt - 0.02 * L, cx + 0.062 * L, tt);
+    c.lineTo(cx + 0.034 * L, tb - 0.04 * L); c.quadraticCurveTo(cx, tb + 0.03 * L, cx - 0.034 * L, tb - 0.04 * L);
+    c.closePath(); c.fill();
+    c.restore();
+    for (i = 0; i < 4; i++) {
+      var tx = cx + (i - 1.5) * 0.026 * L;
+      c.strokeStyle = 'rgba(217,197,156,0.5)'; c.lineWidth = WIDTH[i] * 0.45;
+      c.beginPath(); c.moveTo(sx(i, 1), endY(i)); c.lineTo(tx, tb - 0.075 * L); c.stroke();
+      c.fillStyle = '#d6a24a'; c.beginPath(); c.arc(tx, tb - 0.075 * L, 2.3, 0, 6.3); c.fill();
+    }
+
+    // bridge
+    var hb = 0.135 * L, drop = 0.02 * L;
+    var bt = function (dx) { return yB + drop * (dx / hb) * (dx / hb); };
+    c.save();
+    c.shadowColor = 'rgba(0,0,0,0.5)'; c.shadowBlur = 8; c.shadowOffsetY = 4;
+    var bgr = c.createLinearGradient(0, yB - 0.02 * L, 0, yB + 0.06 * L);
+    bgr.addColorStop(0, '#ecd5a4'); bgr.addColorStop(1, '#b98b4e');
+    c.fillStyle = bgr;
+    c.beginPath(); c.moveTo(cx - hb, bt(-hb)); c.quadraticCurveTo(cx, yB - drop, cx + hb, bt(hb));
+    c.lineTo(cx + hb - 0.012 * L, yB + 0.055 * L); c.lineTo(cx + 0.062 * L, yB + 0.055 * L);
+    c.quadraticCurveTo(cx + 0.058 * L, yB + 0.028 * L, cx + 0.025 * L, yB + 0.026 * L);
+    c.lineTo(cx - 0.025 * L, yB + 0.026 * L);
+    c.quadraticCurveTo(cx - 0.058 * L, yB + 0.028 * L, cx - 0.062 * L, yB + 0.055 * L);
+    c.lineTo(cx - hb + 0.012 * L, yB + 0.055 * L); c.closePath(); c.fill();
+    c.restore();
+    c.fillStyle = 'rgba(60,30,10,0.55)';
+    [-1, 1].forEach(function (s) { c.beginPath(); c.ellipse(cx + s * 0.088 * L, yB + 0.022 * L, 0.018 * L, 0.008 * L, 0, 0, 6.3); c.fill(); });
+
+    // maple neck
+    var nh = function (y) { return fbHalf(Math.max((y - y0) / L, 0)) + L * 0.014; };
+    var ny = yJ + 0.05 * L;
+    c.save();
+    c.shadowColor = 'rgba(0,0,0,0.45)'; c.shadowBlur = 10;
+    var ng = c.createLinearGradient(cx - nh(ny), 0, cx + nh(ny), 0);
+    ng.addColorStop(0, '#5c230e'); ng.addColorStop(0.35, '#b0601f'); ng.addColorStop(0.5, '#c47a2c'); ng.addColorStop(1, '#4a1b0a');
+    c.fillStyle = ng;
+    c.beginPath(); c.moveTo(cx - nh(0), 0); c.lineTo(cx + nh(0), 0); c.lineTo(cx + nh(ny), ny); c.lineTo(cx - nh(ny), ny); c.closePath(); c.fill();
+    c.restore();
+
+    // ebony fingerboard
+    var fe = y0 + UFB * L;
+    c.save();
+    c.shadowColor = 'rgba(0,0,0,0.55)'; c.shadowBlur = 12; c.shadowOffsetY = 3;
+    var fg = c.createLinearGradient(cx - fbHalf(UFB), 0, cx + fbHalf(UFB), 0);
+    fg.addColorStop(0, '#0b0604'); fg.addColorStop(0.5, '#2b1a10'); fg.addColorStop(1, '#0b0604');
+    c.fillStyle = fg;
+    c.beginPath(); c.moveTo(cx - fbHalf(0), y0); c.lineTo(cx + fbHalf(0), y0); c.lineTo(cx + fbHalf(UFB), fe);
+    c.quadraticCurveTo(cx, fe + 0.025 * L, cx - fbHalf(UFB), fe); c.closePath(); c.fill();
+    c.shadowColor = 'transparent';
+    var gl = c.createLinearGradient(cx - fbHalf(UFB), 0, cx + fbHalf(UFB), 0);
+    gl.addColorStop(0.18, 'rgba(255,240,210,0)'); gl.addColorStop(0.30, 'rgba(255,240,210,0.10)'); gl.addColorStop(0.42, 'rgba(255,240,210,0)');
+    c.fillStyle = gl; c.fill();
+    c.restore();
+
+    // semitone marks (like finger tape on a student violin)
+    for (var n = 1; n <= MAXN; n++) {
+      var u = uFromN(n); if (u > MAXU) break;
+      var y = y0 + u * L, hw = fbHalf(u), major = (n % 12 === 0), len = major ? 16 : 7;
+      c.strokeStyle = major ? 'rgba(240,226,192,0.55)' : 'rgba(240,226,192,0.22)'; c.lineWidth = major ? 1.4 : 1;
+      c.beginPath(); c.moveTo(cx - hw + 2, y); c.lineTo(cx - hw + 2 + len, y); c.moveTo(cx + hw - 2, y); c.lineTo(cx + hw - 2 - len, y); c.stroke();
+    }
+
+    // nut and pegbox
+    var ngr = c.createLinearGradient(0, y0 - 4, 0, y0 + 1);
+    ngr.addColorStop(0, '#f6ecd0'); ngr.addColorStop(1, '#c9b48e');
+    c.fillStyle = ngr; c.fillRect(cx - fbHalf(0) - 2, y0 - 4, 2 * fbHalf(0) + 4, 5);
+    c.fillStyle = '#120a06';
+    c.fillRect(cx - nh(0) - 4, 6, 2 * nh(0) + 8, y0 - 10);
+    c.strokeStyle = 'rgba(227,169,77,0.3)'; c.lineWidth = 1; c.strokeRect(cx - nh(0) - 4, 6, 2 * nh(0) + 8, y0 - 10);
+    [-1, 1].forEach(function (s) {
+      [18, 40].forEach(function (py) {
+        var px = cx + s * (nh(0) + 16);
+        c.strokeStyle = '#1a0e08'; c.lineWidth = 4; c.beginPath(); c.moveTo(cx + s * (nh(0) + 3), py); c.lineTo(px, py); c.stroke();
+        var pg = c.createRadialGradient(px - 2, py - 2, 1, px, py, 8);
+        pg.addColorStop(0, '#3a2416'); pg.addColorStop(1, '#0d0704');
+        c.fillStyle = pg; c.beginPath(); c.arc(px, py, 7.5, 0, 6.3); c.fill();
+        c.strokeStyle = 'rgba(227,169,77,0.55)'; c.lineWidth = 1; c.stroke();
+      });
+    });
+  }
+
+  /* ---------- the animated layer: strings, finger, bow ---------- */
   function mix(a, b, t) { return Math.round(a + (b - a) * t); }
+  function drawBow() {
+    var L = G.L, y = G.y0 + 0.90 * L;
+    g.save(); g.translate(G.cx + bowOff, y); g.rotate(-0.03);
+    var bs = Math.min(1, (G.cx - 0.075 * L - 6) / (0.5 * L)); // keep the whole bow on narrow screens
+    var xl = -0.50 * L * bs, xr = 0.47 * L * bs;
+    g.lineCap = 'round';
+    g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 8; g.shadowOffsetY = 5;
+    g.strokeStyle = 'rgba(244,234,208,0.92)'; g.lineWidth = Math.max(4, 0.012 * L);
+    g.beginPath(); g.moveTo(xl + 0.07 * L, 0); g.lineTo(xr - 0.015 * L, 0); g.stroke();
+    g.shadowColor = 'transparent';
+    g.strokeStyle = '#2b140a'; g.lineWidth = Math.max(2.4, 0.0075 * L);
+    g.beginPath(); g.moveTo(xl + 0.06 * L, -0.022 * L); g.quadraticCurveTo(0, -0.036 * L, xr, -0.004 * L); g.stroke();
+    g.strokeStyle = 'rgba(214,150,80,0.55)'; g.lineWidth = 1;
+    g.beginPath(); g.moveTo(xl + 0.08 * L, -0.0235 * L); g.quadraticCurveTo(0, -0.0375 * L, xr - 0.02 * L, -0.0055 * L); g.stroke();
+    g.fillStyle = '#120708'; g.fillRect(xl, -0.036 * L, 0.075 * L, 0.04 * L);
+    g.strokeStyle = '#d6a24a'; g.lineWidth = 1.4; g.strokeRect(xl, -0.036 * L, 0.075 * L, 0.04 * L);
+    g.fillStyle = '#d6a24a'; g.fillRect(xl + 0.05 * L, -0.036 * L, 0.006 * L, 0.04 * L);
+    g.restore();
+  }
   function draw() {
-    var W = canvas.clientWidth, H = canvas.clientHeight;
-    g.clearRect(0, 0, W, H);
-    for (var i = 0; i < notes.length; i++) {
-      var s = state[i], x = (i + 0.5) / notes.length * W;
-      var amp = reduce ? 0 : s.a * (7 + i * 1.6);
+    var L = G.L, y0 = G.y0, i;
+    g.clearRect(0, 0, G.W, G.H);
+    g.drawImage(bg, 0, 0, G.W, G.H);
+    var sc = Math.max(0.7, Math.min(1.1, L / 430));
+    for (i = 0; i < 4; i++) {
+      var s = state[i], on = s.owner !== null;
+      var yf = on ? y0 + s.uf * L : y0, ye = endY(i);
+      var amp = reduce ? 0 : s.a * (5 + i * 1.4) * sc;
       var col = 'rgb(' + mix(217, 255, s.a) + ',' + mix(197, 216, s.a) + ',' + mix(156, 143, s.a) + ')';
-      if (s.a > 0.02 && !reduce) { // soft blur envelope
-        g.lineWidth = notes[i].w * 1.4;
-        g.strokeStyle = 'rgba(255,214,140,' + (0.16 * s.a) + ')';
+      var w = WIDTH[i] * sc, y, u, v;
+      if (on && yf > y0 + 1) { // the part of the string above the finger is silent
+        g.strokeStyle = 'rgba(217,197,156,0.45)'; g.lineWidth = w;
+        g.beginPath(); g.moveTo(sx(i, 0), y0); g.lineTo(sx(i, s.uf), yf); g.stroke();
+      }
+      if (s.a > 0.02 && amp > 0) {
+        g.lineWidth = w * 1.4; g.strokeStyle = 'rgba(255,214,140,' + (0.16 * s.a) + ')';
         [1, -1].forEach(function (sign) {
           g.beginPath();
-          for (var y = 0; y <= H; y += 6) g.lineTo(x + sign * Math.sin(Math.PI * y / H) * amp, y);
+          for (y = yf; y <= ye; y += 6) { v = (y - yf) / (ye - yf); g.lineTo(sx(i, (y - y0) / L) + sign * Math.sin(Math.PI * v) * amp, y); }
           g.stroke();
         });
       }
-      g.lineWidth = notes[i].w;
-      g.strokeStyle = col;
-      g.shadowColor = 'rgba(255,200,110,' + s.a + ')';
-      g.shadowBlur = 16 * s.a;
+      g.lineWidth = w; g.strokeStyle = col;
+      g.shadowColor = 'rgba(255,200,110,' + s.a + ')'; g.shadowBlur = 16 * s.a;
       g.beginPath();
-      for (var yy = 0; yy <= H; yy += 6) {
-        var u = yy / H;
-        var d = Math.sin(Math.PI * u) * amp * Math.sin(s.phase) +
-                0.3 * Math.sin(2 * Math.PI * u) * amp * Math.sin(s.phase * 2 + 1);
-        g.lineTo(x + d, yy);
+      for (y = yf; y <= ye + 5; y += 6) {
+        var yy = Math.min(y, ye);
+        u = (yy - y0) / L; v = (yy - yf) / (ye - yf);
+        var d = Math.sin(Math.PI * v) * amp * Math.sin(s.phase) + 0.3 * Math.sin(2 * Math.PI * v) * amp * Math.sin(s.phase * 2 + 1);
+        g.lineTo(sx(i, u) + d, yy);
       }
-      g.stroke();
-      g.shadowBlur = 0;
+      g.stroke(); g.shadowBlur = 0;
+    }
+    drawBow();
+    for (i = 0; i < 4; i++) { // finger and note name
+      var t = state[i]; if (t.owner === null) continue;
+      var fy = y0 + t.uf * L, fx = sx(i, t.uf), r = Math.max(9, Math.min(13, 12 * sc));
+      var fgr = g.createRadialGradient(fx, fy, 1, fx, fy, r * 1.8);
+      fgr.addColorStop(0, 'rgba(255,236,185,0.95)'); fgr.addColorStop(0.5, 'rgba(227,169,77,0.55)'); fgr.addColorStop(1, 'rgba(227,169,77,0)');
+      g.fillStyle = fgr; g.beginPath(); g.arc(fx, fy, r * 1.8, 0, 6.3); g.fill();
+      g.strokeStyle = '#ffe3a6'; g.lineWidth = 1.6; g.beginPath(); g.arc(fx, fy, r * 0.8, 0, 6.3); g.stroke();
+      var label = noteName(i, t.n);
+      g.font = 'italic ' + Math.round(20 * sc) + 'px "Instrument Serif", Georgia, serif';
+      g.textAlign = 'right'; g.textBaseline = 'middle';
+      var lx = G.cx - fbHalf(t.uf) - 10;
+      g.lineWidth = 4; g.strokeStyle = 'rgba(10,5,3,0.85)'; g.strokeText(label, lx, fy);
+      g.fillStyle = '#f6e7c6'; g.fillText(label, lx, fy);
     }
   }
   function frame(t) {
-    var dt = Math.min(0.05, (t - last) / 1000 || 0.016);
+    var dt = Math.min(0.05, (t - last) / 1000 || 0.016), moving = false, act = false;
     last = t;
-    var moving = false;
     state.forEach(function (s, i) {
-      if (s.bow) s.a += (1 - s.a) * Math.min(1, dt * 10);
-      else s.a *= Math.pow(0.04, dt);
-      if (!s.bow && s.a < 0.004) s.a = 0;
-      if (s.bow || s.a > 0) moving = true;
-      s.phase += dt * Math.PI * 2 * (10 + i * 2.5);
+      var on = s.owner !== null;
+      if (on) s.a += (1 - s.a) * Math.min(1, dt * 10); else s.a *= Math.pow(0.04, dt);
+      if (!on && s.a < 0.004) s.a = 0;
+      if (on || s.a > 0) moving = true;
+      if (on) act = true;
+      s.phase += dt * Math.PI * 2 * (9 + 5 * Math.log2(hz(i, s.n) / 196));
     });
+    bowT += dt;
+    var target = (act && !reduce) ? Math.sin(bowT * 2.2) * 0.075 * G.L : 0;
+    bowOff += (target - bowOff) * Math.min(1, dt * 6);
+    if (Math.abs(bowOff) > 0.3) moving = true;
     draw();
     raf = moving ? requestAnimationFrame(frame) : null;
   }
   function kick() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
 
-  /* ---------- sound: a bowed string with vibrato and a little hall reverb ---------- */
-  var ac, master, voices = [null, null, null, null];
+  /* ---------- sound: bowed string, body resonances, rosin noise, vibrato, hall ---------- */
+  var ac, master, bodyIn, noiseBuf, wave, voices = [null, null, null, null];
   function audio() {
-    if (!ac) {
-      ac = new (window.AudioContext || window.webkitAudioContext)();
-      master = ac.createGain(); master.gain.value = 0.9;
-      var comp = ac.createDynamicsCompressor();
-      master.connect(comp); comp.connect(ac.destination);
-      var len = Math.floor(ac.sampleRate * 2.4), ir = ac.createBuffer(2, len, ac.sampleRate);
-      for (var c = 0; c < 2; c++) {
-        var d = ir.getChannelData(c);
-        for (var n = 0; n < len; n++) d[n] = (Math.random() * 2 - 1) * Math.pow(1 - n / len, 2.6);
+    if (ac) { if (ac.state === 'suspended') ac.resume(); return ac; }
+    ac = new (window.AudioContext || window.webkitAudioContext)();
+    var sr = ac.sampleRate;
+    master = ac.createGain(); master.gain.value = 0.9;
+    var comp = ac.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 3;
+    master.connect(comp); comp.connect(ac.destination);
+    // concert-hall reverb whose tail gets darker as it fades
+    var len = Math.floor(sr * 2.8), ir = ac.createBuffer(2, len, sr);
+    for (var c = 0; c < 2; c++) {
+      var d = ir.getChannelData(c), y = 0;
+      for (var k = 0; k < len; k++) {
+        var t = k / len, al = 0.55 * Math.pow(1 - t, 1.5) + 0.04;
+        y += ((Math.random() * 2 - 1) - y) * al;
+        d[k] = y * Math.pow(1 - t, 2.2) * 2.2;
       }
-      var conv = ac.createConvolver(); conv.buffer = ir;
-      var wet = ac.createGain(); wet.gain.value = 0.35;
-      master.connect(conv); conv.connect(wet); wet.connect(comp);
     }
-    if (ac.state === 'suspended') ac.resume();
+    var conv = ac.createConvolver(); conv.buffer = ir;
+    var pre = ac.createDelay(0.1); pre.delayTime.value = 0.02;
+    var wet = ac.createGain(); wet.gain.value = 0.34;
+    master.connect(pre); pre.connect(conv); conv.connect(wet); wet.connect(comp);
+    // violin body: air and wood resonances, bridge hill
+    bodyIn = ac.createGain();
+    var node = bodyIn, hp = ac.createBiquadFilter();
+    hp.type = 'highpass'; hp.frequency.value = 160; hp.Q.value = 0.7; node.connect(hp); node = hp;
+    [[280, 4, 3], [460, 6, 4], [1050, 3, 2], [2300, 5, 1.2], [3300, 4, 2]].forEach(function (p) {
+      var f = ac.createBiquadFilter(); f.type = 'peaking'; f.frequency.value = p[0]; f.gain.value = p[1]; f.Q.value = p[2];
+      node.connect(f); node = f;
+    });
+    var lp = ac.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 7500; lp.Q.value = 0.5;
+    node.connect(lp); lp.connect(master);
+    noiseBuf = ac.createBuffer(1, sr * 2, sr);
+    var nd = noiseBuf.getChannelData(0); for (var q = 0; q < nd.length; q++) nd[q] = Math.random() * 2 - 1;
+    // a bowed string vibrates in a sawtooth-like (Helmholtz) motion
+    var N = 64, re = new Float32Array(N), im = new Float32Array(N);
+    for (var h = 1; h < N; h++) im[h] = 1 / Math.pow(h, 1.05);
+    wave = ac.createPeriodicWave(re, im);
     return ac;
   }
-  function startVoice(i) {
-    if (voices[i]) return;
+  function level(f) { return 0.16 * Math.pow(196 / f, 0.22); }
+  function vibrato(i, delay, full) {
+    var v = voices[i]; if (!v) return;
+    var t = ac.currentTime;
+    v.vd.gain.cancelScheduledValues(t);
+    v.vd.gain.setValueAtTime(0, t);
+    v.vd.gain.setValueAtTime(0, t + delay);
+    v.vd.gain.linearRampToValueAtTime(14, t + full);
+  }
+  function startVoice(i, freq) {
     try {
-      var a = audio(), t = a.currentTime, f = notes[i].f;
+      var a = audio(), t = a.currentTime, lv = level(freq);
       var out = a.createGain();
       out.gain.setValueAtTime(0.0001, t);
-      out.gain.exponentialRampToValueAtTime(0.26, t + 0.14);
-      var lp = a.createBiquadFilter();
-      lp.type = 'lowpass'; lp.Q.value = 0.7;
-      lp.frequency.setValueAtTime(f * 9, t);
-      lp.frequency.exponentialRampToValueAtTime(f * 4, t + 0.5);
-      var oscs = [-5, 4].map(function (cents) {
+      out.gain.exponentialRampToValueAtTime(lv * 1.35, t + 0.05);   // the bite of the bow
+      out.gain.exponentialRampToValueAtTime(lv, t + 0.22);
+      var oscs = [-4, 4].map(function (cents) {
         var o = a.createOscillator(), gn = a.createGain();
-        o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = cents; gn.gain.value = 0.5;
-        o.connect(gn); gn.connect(lp);
-        return o;
+        o.setPeriodicWave(wave); o.frequency.value = freq; o.detune.value = cents; gn.gain.value = 0.5;
+        o.connect(gn); gn.connect(out); return o;
       });
-      var lfo = a.createOscillator(), depth = a.createGain();
-      lfo.frequency.value = 5.3;
-      depth.gain.setValueAtTime(0, t);
-      depth.gain.linearRampToValueAtTime(0, t + 0.35);
-      depth.gain.linearRampToValueAtTime(f * 0.0045, t + 1.1);
-      lfo.connect(depth);
-      oscs.forEach(function (o) { depth.connect(o.frequency); });
-      lp.connect(out); out.connect(master);
-      oscs.forEach(function (o) { o.start(t); });
-      lfo.start(t);
-      voices[i] = { oscs: oscs, lfo: lfo, out: out };
-    } catch (e) { /* audio unavailable: visuals still work */ }
+      var lfo = a.createOscillator(), vd = a.createGain();
+      lfo.frequency.value = 5.6; vd.gain.value = 0; lfo.connect(vd);
+      oscs.forEach(function (o) { vd.connect(o.detune); });
+      var ns = a.createBufferSource(); ns.buffer = noiseBuf; ns.loop = true;
+      var bp = a.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 3000; bp.Q.value = 0.7;
+      var ng = a.createGain();
+      ng.gain.setValueAtTime(0.0001, t);
+      ng.gain.exponentialRampToValueAtTime(lv * 0.9, t + 0.03);
+      ng.gain.exponentialRampToValueAtTime(lv * 0.07, t + 0.25);
+      ns.connect(bp); bp.connect(ng); ng.connect(out);
+      out.connect(bodyIn);
+      oscs.forEach(function (o) { o.start(t); }); lfo.start(t); ns.start(t, Math.random() * 1.5);
+      voices[i] = { oscs: oscs, lfo: lfo, vd: vd, out: out, ns: ns };
+      vibrato(i, 0.45, 1.1);
+    } catch (e) { if (window.console) console.error(e); }
   }
-  function stopVoice(i) {
+  function setPitch(i, freq) {
+    var v = voices[i]; if (!v) return;
+    var t = ac.currentTime;
+    v.oscs.forEach(function (o) { o.frequency.setTargetAtTime(freq, t, snap ? 0.025 : 0.012); });
+  }
+  function stopVoice(i, rel) {
     var v = voices[i]; if (!v) return;
     var t = ac.currentTime;
     v.out.gain.cancelScheduledValues(t);
     v.out.gain.setValueAtTime(Math.max(v.out.gain.value, 0.0001), t);
-    v.out.gain.exponentialRampToValueAtTime(0.0001, t + 0.45);
-    v.oscs.concat([v.lfo]).forEach(function (o) { o.stop(t + 0.5); });
+    v.out.gain.exponentialRampToValueAtTime(0.0001, t + rel);
+    v.oscs.concat([v.lfo, v.ns]).forEach(function (o) { try { o.stop(t + rel + 0.05); } catch (e) {} });
     voices[i] = null;
   }
 
-  /* ---------- interaction ---------- */
-  function down(i) { state[i].bow = true; keys[i].classList.add('on'); startVoice(i); kick(); }
-  function up(i) { state[i].bow = false; keys[i].classList.remove('on'); stopVoice(i); kick(); }
-
+  /* ---------- playing ---------- */
+  var lastText = '';
+  function show(i, n) {
+    var txt = noteName(i, n) + ', ' + Math.round(hz(i, n)) + ' Hz';
+    if (txt !== lastText) { readout.textContent = txt; lastText = txt; }
+  }
+  function begin(owner, i, n) {
+    var s = state[i]; s.owner = owner; s.n = n; s.uf = uFromN(n);
+    keys[i].classList.add('on'); startVoice(i, hz(i, n)); show(i, n); kick();
+  }
+  function change(i, n) {
+    var s = state[i], dn = Math.abs(n - s.n);
+    s.n = n; s.uf = uFromN(n); setPitch(i, hz(i, n));
+    if (dn >= 0.6) vibrato(i, 0.4, 1.0);
+    show(i, n); kick();
+  }
+  function finish(i, rel) {
+    var s = state[i]; s.owner = null; keys[i].classList.remove('on');
+    stopVoice(i, rel || 0.28);
+    if (!state.some(function (x) { return x.owner !== null; })) { readout.textContent = ''; lastText = ''; }
+    kick();
+  }
+  function pitchFromU(u, yPx) {
+    if (yPx < 9) return 0;                       // open string zone near the nut
+    var n = -12 * Math.log2(1 - Math.min(u, MAXU));
+    n = Math.min(n, MAXN);
+    return snap ? Math.round(n) : n;
+  }
+  function hit(e) {
+    var r = canvas.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+    var u = Math.min(Math.max((y - G.y0) / G.L, 0), 1), best = 0, bd = 1e9;
+    for (var i = 0; i < 4; i++) { var d = Math.abs(x - sx(i, u)); if (d < bd) { bd = d; best = i; } }
+    return { i: best, n: pitchFromU(u, y - G.y0) };
+  }
+  var active = {};
+  play.addEventListener('pointerdown', function (e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    e.preventDefault();
+    var h = hit(e); if (state[h.i].owner !== null) return;
+    try { play.setPointerCapture(e.pointerId); } catch (x) {}
+    active[e.pointerId] = h.i; begin('p' + e.pointerId, h.i, h.n);
+  });
+  play.addEventListener('pointermove', function (e) {
+    var i = active[e.pointerId]; if (i === undefined) return;
+    var h = hit(e);
+    if (h.i !== i && state[h.i].owner === null) {          // crossing to another string, like a bow
+      finish(i, 0.12); active[e.pointerId] = h.i; begin('p' + e.pointerId, h.i, h.n);
+    } else if (Math.abs(h.n - state[i].n) > 1e-3 && h.i === i) change(i, h.n);
+  });
+  ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (ev) {
+    play.addEventListener(ev, function (e) {
+      var i = active[e.pointerId]; if (i === undefined) return;
+      delete active[e.pointerId]; finish(i);
+    });
+  });
   keys.forEach(function (btn, i) {
-    btn.addEventListener('pointerdown', function (e) {
-      e.preventDefault();
-      try { btn.setPointerCapture(e.pointerId); } catch (err) {}
-      down(i);
-    });
-    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (ev) {
-      btn.addEventListener(ev, function () { up(i); });
-    });
     btn.addEventListener('keydown', function (e) {
-      if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); down(i); }
+      var s = state[i];
+      if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); if (s.owner === null) begin('k' + i, i, s.kn); }
+      else if (/^Arrow(Up|Right|Down|Left)$/.test(e.key)) {
+        e.preventDefault();
+        s.kn = Math.max(0, Math.min(MAXN, s.kn + ((e.key === 'ArrowUp' || e.key === 'ArrowRight') ? 1 : -1)));
+        if (s.owner === 'k' + i) change(i, s.kn); else show(i, s.kn);
+      }
     });
-    btn.addEventListener('keyup', function (e) {
-      if (e.key === 'Enter' || e.key === ' ') up(i);
-    });
-    btn.addEventListener('blur', function () { up(i); });
+    btn.addEventListener('keyup', function (e) { if ((e.key === 'Enter' || e.key === ' ') && state[i].owner === 'k' + i) finish(i); });
+    btn.addEventListener('blur', function () { if (state[i].owner === 'k' + i) finish(i); });
     btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
   });
+  snapBtn.addEventListener('click', function () {
+    snap = !snap;
+    snapBtn.textContent = 'Snap to notes: ' + (snap ? 'on' : 'off');
+    snapBtn.setAttribute('aria-pressed', snap ? 'true' : 'false');
+  });
 
-  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(canvas);
+  /* ---------- sizing ---------- */
+  function placeControls() {
+    var pw = 0.50 * G.L, pl = G.cx - pw / 2;
+    play.style.left = pl + 'px'; play.style.top = '0px';
+    play.style.width = pw + 'px'; play.style.height = (G.yB + 0.06 * G.L) + 'px';
+    keys.forEach(function (b, i) { b.style.left = (sx(i, 0) - pl - 14) + 'px'; b.style.top = '10px'; });
+  }
+  function resize() {
+    var dpr = window.devicePixelRatio || 1;
+    layout();
+    if (G.W < 20 || G.H < 20) return;   // board is hidden (collapsed on phones)
+    [canvas, bg].forEach(function (c) { c.width = Math.round(G.W * dpr); c.height = Math.round(G.H * dpr); });
+    g.setTransform(dpr, 0, 0, dpr, 0, 0); bgc.setTransform(dpr, 0, 0, dpr, 0, 0);
+    drawStatic(); placeControls(); draw();
+  }
+  var vio = document.getElementById('violin'), tg = document.getElementById('violin-toggle');
+  tg.addEventListener('click', function () {
+    var open = vio.classList.toggle('open');
+    tg.setAttribute('aria-expanded', open ? 'true' : 'false');
+    tg.textContent = open ? 'Hide the violin' : 'Play the violin';
+    if (!open) state.forEach(function (s, i) { if (s.owner !== null) finish(i); });
+  });
+  document.querySelectorAll('.hero-links a[href="#about"]').forEach(function (a) {
+    a.addEventListener('click', function () { if (window.matchMedia('(max-width: 800px)').matches && !vio.classList.contains('open')) tg.click(); });
+  });
+  if ('ResizeObserver' in window) new ResizeObserver(resize).observe(board);
   window.addEventListener('resize', resize);
   resize();
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(draw);
 })();
 </script>
 </body>
