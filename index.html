@@ -73,25 +73,24 @@
 
   .board {
     position: relative; align-self: end;
-    height: min(80vh, 700px);
-    background: radial-gradient(90% 70% at 50% 35%, #2b140b 0%, #150b06 70%, #0d0603 100%);
+    height: min(84vh, 780px);
+    background: radial-gradient(85% 60% at 50% 38%, #3a190c 0%, #1a0d07 62%, #0d0603 100%);
     border-radius: 10px;
     box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.10), 0 30px 70px rgba(0, 0, 0, 0.45);
     overflow: hidden;
   }
+  .violin-img { position: absolute; max-width: none; pointer-events: none; -webkit-user-select: none; user-select: none; filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.6)); }
   .board canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
   .play {
     position: absolute; touch-action: none; cursor: pointer;
     -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
   }
   .key {
-    all: unset; position: absolute; width: 28px; height: 40px;
-    display: grid; place-items: center; border-radius: 50%; cursor: pointer; touch-action: none;
-    -webkit-user-select: none; user-select: none; -webkit-touch-callout: none;
+    all: unset; position: absolute; width: 22px; height: 22px; border-radius: 50%;
+    pointer-events: none;
   }
-  .key span { font-family: var(--serif); font-style: italic; font-size: 1.35rem; line-height: 1; color: var(--muted); transition: color 0.15s; }
-  .key:hover span, .key.on span { color: var(--gold); }
-  .key:focus-visible { outline: 2px solid var(--gold); outline-offset: 0; }
+  .key span { display: none; }
+  .key:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
   .hero-links { margin: 1.8rem 0 0; display: flex; flex-wrap: wrap; gap: 0.8rem; }
   a.copy-btn { display: inline-block; text-decoration: none; color: #fbf0d4; }
@@ -123,7 +122,7 @@
   .body p { margin: 0 0 1.15em; }
   .body p:last-child { margin-bottom: 0; }
 
-  .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 420px); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+  .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
   .portrait { margin: 0; position: relative; }
   .portrait img { display: block; width: 100%; height: auto; border-radius: 3px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); }
   .portrait::after { content: ""; position: absolute; inset: 0; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(227, 169, 77, 0.35); pointer-events: none; }
@@ -169,7 +168,7 @@
   @media (max-width: 800px) {
     .hero { grid-template-columns: 1fr; padding-top: 7.5rem; gap: 1.5rem; min-height: auto; }
     .hero-text { padding-bottom: 0; }
-    .board { height: 66vh; min-height: 440px; }
+    .board { height: 72vh; min-height: 480px; max-height: 640px; max-width: 360px; margin: 0 auto; }
     .hero-photo { height: 58vh; min-height: 360px; max-height: 560px; }
     .violin-toggle { display: inline-block; }
     .violin-body { display: none; margin-top: 1rem; }
@@ -220,14 +219,15 @@
     <div class="violin" id="violin">
       <button type="button" class="copy-btn violin-toggle" id="violin-toggle" aria-expanded="false" aria-controls="violin-body">Play the violin</button>
       <div class="violin-body" id="violin-body">
-        <p class="hint">Hold a string to bow it. Slide up and down to change the note.</p>
+        <p class="hint">Hold a string to bow it. Slide up and down to change the note. Strings, left to right: G, D, A, E.</p>
         <div class="violin-top">
           <p class="readout" id="readout" role="status" aria-live="polite"></p>
           <button type="button" class="copy-btn snap" id="snap" aria-pressed="true">Snap to notes: on</button>
         </div>
         <div class="board" id="board">
+          <img class="violin-img" id="violin-img" src="violin.webp" alt="Vincent's violin" width="424" height="1140" loading="lazy" decoding="async" draggable="false">
           <canvas id="strings" aria-hidden="true"></canvas>
-          <div class="play" id="play" role="group" aria-label="Violin strings. Press and hold a string to bow it. Drag up and down to change the note. With the keyboard, hold Enter on a string and use the arrow keys to change the note.">
+          <div class="play" id="play" role="group" aria-label="Violin strings, left to right: G, D, A, E. Press and hold to bow. Drag up and down to change the note. With the keyboard, hold Enter on a string and use the arrow keys to change the note.">
             <button class="key" aria-label="G string"><span>G</span></button>
             <button class="key" aria-label="D string"><span>D</span></button>
             <button class="key" aria-label="A string"><span>A</span></button>
@@ -371,261 +371,118 @@
   });
 })();
 
-/* ================= The violin ================= */
+/* ================= The violin (a photo, with live strings on top) ================= */
 (function () {
   var board = document.getElementById('board'), canvas = document.getElementById('strings'), play = document.getElementById('play');
+  var img = document.getElementById('violin-img');
   var g = canvas.getContext('2d');
   var keys = [].slice.call(play.querySelectorAll('.key'));
   var readout = document.getElementById('readout'), snapBtn = document.getElementById('snap');
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  var NAMES = ['C', 'C\u266F', 'D', 'D\u266F', 'E', 'F', 'F\u266F', 'G', 'G\u266F', 'A', 'A\u266F', 'B'];
+  var NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
   var MIDI0 = [55, 62, 69, 76];          // G3 D4 A4 E5
-  var WIDTH = [3.6, 2.9, 2.2, 1.6];
-  var MAXU = 0.75, UFB = 0.83, MAXN = 24; // two octaves above the open string
+  var MAXN = 24, MAXU = 0.75;            // two octaves above the open string
   var snap = true;
   var state = MIDI0.map(function () { return { a: 0, phase: Math.random() * 6.28, owner: null, n: 0, uf: 0, kn: 0 }; });
-  var G = {};
-  var bg = document.createElement('canvas'), bgc = bg.getContext('2d');
-  var raf = null, last = 0, bowOff = 0, bowT = 0;
+  var raf = null, last = 0, bowOff = 0, bowT = 0, hover = null;
 
-  /* ---------- geometry (everything scales from the string length L) ---------- */
+  /* ---------- the photo: all numbers are pixels of violin.webp (424 x 1140) ---------- */
+  var IMG_W = 424, IMG_H = 1140;
+  var YN = 171, YB = 756;                // nut and bridge, where the strings begin and end
+  var XC = 186, BOW_HALF = 240, YBOW = 706;
+  // each string is a straight line x = a + b * (y - y0), measured on the photo
+  var FIT = [[162.4, -0.0262, 420], [178.0, -0.0075, 200], [188.7, 0.0148, 200], [208.0, 0.0320, 420]];
+  var WID = [3.2, 2.6, 2.4, 1.8];
+  function xs(i, y) { return FIT[i][0] + FIT[i][1] * (y - FIT[i][2]); }
+  function yAt(t) { return YN + t * (YB - YN); }
+
+  var G = { W: 0, H: 0, sc: 1, ox: 0, oy: 0, dpr: 1 };
   function layout() {
-    var W = board.clientWidth, H = board.clientHeight, top = 62, pad = 18;
-    var L = Math.min((H - top - pad) / 1.49, (W - 28) / 0.72);
-    G = { W: W, H: H, L: L, y0: top, yB: top + L, yJ: top + 0.40 * L, Lb: 1.09 * L, cx: W / 2 };
+    var W = board.clientWidth, H = board.clientHeight;
+    var sc = Math.min((H - 28) / IMG_H, (W - 14) / (2 * BOW_HALF));
+    G = { W: W, H: H, sc: sc, ox: W / 2 - XC * sc, oy: (H - IMG_H * sc) / 2, dpr: window.devicePixelRatio || 1 };
   }
-  function sp(u) { return G.L * (0.058 + 0.016 * u); }
-  function sx(i, u) { return G.cx + (i - 1.5) * sp(u); }
-  function fbHalf(u) { u = Math.max(u, 0); return 1.5 * sp(u) + G.L * (0.032 + 0.010 * u); }
-  function endY(i) { var dx = (i - 1.5) * sp(1), hb = 0.135 * G.L; return G.yB + 0.02 * G.L * (dx / hb) * (dx / hb); }
   function uFromN(n) { return 1 - Math.pow(2, -n / 12); }
   function hz(i, n) { return 440 * Math.pow(2, (MIDI0[i] + n - 69) / 12); }
   function noteName(i, n) { var m = MIDI0[i] + Math.round(n); return NAMES[((m % 12) + 12) % 12] + (Math.floor(m / 12) - 1); }
 
-  /* ---------- the static instrument, drawn once per size ---------- */
-  function drawStatic() {
-    var c = bgc, W = G.W, H = G.H, L = G.L, cx = G.cx, y0 = G.y0, yB = G.yB, yJ = G.yJ, Lb = G.Lb, i;
-    c.clearRect(0, 0, W, H);
-    var hn = fbHalf(0.40) + L * 0.016;
-
-    function body(sc) {
-      c.save();
-      if (sc) { c.translate(cx, yJ + 0.5 * Lb); c.scale(sc, sc); c.translate(-cx, -(yJ + 0.5 * Lb)); }
-      var X = function (v) { return cx + v; }, Y = function (t) { return yJ + t * Lb; };
-      c.beginPath();
-      c.moveTo(X(hn), Y(0));
-      c.bezierCurveTo(X(hn + 0.07 * L), Y(0.03), X(0.29 * L), Y(0.10), X(0.29 * L), Y(0.26));
-      c.bezierCurveTo(X(0.29 * L), Y(0.38), X(0.205 * L), Y(0.41), X(0.205 * L), Y(0.52));
-      c.bezierCurveTo(X(0.205 * L), Y(0.64), X(0.36 * L), Y(0.64), X(0.36 * L), Y(0.80));
-      c.bezierCurveTo(X(0.36 * L), Y(0.95), X(0.15 * L), Y(1.0), X(0), Y(1.0));
-      c.bezierCurveTo(X(-0.15 * L), Y(1.0), X(-0.36 * L), Y(0.95), X(-0.36 * L), Y(0.80));
-      c.bezierCurveTo(X(-0.36 * L), Y(0.64), X(-0.205 * L), Y(0.64), X(-0.205 * L), Y(0.52));
-      c.bezierCurveTo(X(-0.205 * L), Y(0.41), X(-0.29 * L), Y(0.38), X(-0.29 * L), Y(0.26));
-      c.bezierCurveTo(X(-0.29 * L), Y(0.10), X(-(hn + 0.07 * L)), Y(0.03), X(-hn), Y(0));
-      c.closePath();
-      c.restore();
-    }
-
-    // varnished spruce top
-    body(0);
-    c.save();
-    c.shadowColor = 'rgba(0,0,0,0.55)'; c.shadowBlur = 26; c.shadowOffsetY = 10;
-    var gr = c.createRadialGradient(cx, yJ + 0.55 * Lb, 0.05 * L, cx, yJ + 0.55 * Lb, 0.75 * Lb);
-    gr.addColorStop(0, '#d98a35'); gr.addColorStop(0.45, '#a8501a'); gr.addColorStop(1, '#4b1b0a');
-    c.fillStyle = gr; c.fill();
-    c.restore();
-
-    // wood grain and sheen, clipped to the body
-    c.save(); body(0); c.clip();
-    for (var k = -34; k <= 34; k++) {
-      var f = (k < 0 ? -1 : 1) * Math.pow(Math.abs(k) / 34, 1.35) * 0.46 * L;
-      c.strokeStyle = 'rgba(45,14,4,' + (0.07 + (Math.abs(k * 7) % 3 === 0 ? 0.05 : 0)) + ')';
-      c.lineWidth = 0.7 + (Math.abs(k * 13) % 5 === 0 ? 0.8 : 0);
-      c.beginPath(); c.moveTo(cx + f * 0.92, yJ);
-      c.bezierCurveTo(cx + f, yJ + 0.3 * Lb, cx + f * 1.04, yJ + 0.7 * Lb, cx + f * 0.96, yJ + Lb);
-      c.stroke();
-    }
-    var sh = c.createRadialGradient(cx - 0.14 * L, yJ + 0.30 * Lb, 2, cx - 0.14 * L, yJ + 0.30 * Lb, 0.55 * L);
-    sh.addColorStop(0, 'rgba(255,230,180,0.30)'); sh.addColorStop(1, 'rgba(255,230,180,0)');
-    c.fillStyle = sh; c.fillRect(0, yJ, W, Lb);
-    c.restore();
-
-    // purfling and edge
-    body(0.955); c.strokeStyle = '#160805'; c.lineWidth = 2.4; c.stroke();
-    body(0.945); c.strokeStyle = 'rgba(240,226,192,0.45)'; c.lineWidth = 0.9; c.stroke();
-    body(0); c.strokeStyle = 'rgba(20,8,3,0.85)'; c.lineWidth = 2.2; c.stroke();
-
-    // f-holes
-    [-1, 1].forEach(function (s) {
-      var xc = cx + s * 0.15 * L;
-      var p0 = [xc + s * 0.010 * L, yB - 0.125 * L], p1 = [xc - s * 0.030 * L, yB - 0.06 * L],
-          p2 = [xc + s * 0.030 * L, yB + 0.05 * L], p3 = [xc - s * 0.004 * L, yB + 0.125 * L];
-      c.strokeStyle = '#0a0403'; c.lineWidth = Math.max(3.2, 0.0085 * L); c.lineCap = 'round';
-      c.beginPath(); c.moveTo(p0[0], p0[1]); c.bezierCurveTo(p1[0], p1[1], p2[0], p2[1], p3[0], p3[1]); c.stroke();
-      c.fillStyle = '#0a0403';
-      c.beginPath(); c.arc(p0[0], p0[1], 0.011 * L, 0, 6.3); c.fill();
-      c.beginPath(); c.arc(p3[0], p3[1], 0.015 * L, 0, 6.3); c.fill();
-    });
-
-    // tailpiece and the strings that run to it
-    var tt = yB + 0.10 * L, tb = yB + 0.40 * L;
-    c.save();
-    c.shadowColor = 'rgba(0,0,0,0.5)'; c.shadowBlur = 8; c.shadowOffsetY = 4;
-    var tg = c.createLinearGradient(cx - 0.062 * L, 0, cx + 0.062 * L, 0);
-    tg.addColorStop(0, '#0a0503'); tg.addColorStop(0.5, '#2a1a10'); tg.addColorStop(1, '#0a0503');
-    c.fillStyle = tg;
-    c.beginPath(); c.moveTo(cx - 0.062 * L, tt); c.quadraticCurveTo(cx, tt - 0.02 * L, cx + 0.062 * L, tt);
-    c.lineTo(cx + 0.034 * L, tb - 0.04 * L); c.quadraticCurveTo(cx, tb + 0.03 * L, cx - 0.034 * L, tb - 0.04 * L);
-    c.closePath(); c.fill();
-    c.restore();
-    for (i = 0; i < 4; i++) {
-      var tx = cx + (i - 1.5) * 0.026 * L;
-      c.strokeStyle = 'rgba(217,197,156,0.5)'; c.lineWidth = WIDTH[i] * 0.45;
-      c.beginPath(); c.moveTo(sx(i, 1), endY(i)); c.lineTo(tx, tb - 0.075 * L); c.stroke();
-      c.fillStyle = '#d6a24a'; c.beginPath(); c.arc(tx, tb - 0.075 * L, 2.3, 0, 6.3); c.fill();
-    }
-
-    // bridge
-    var hb = 0.135 * L, drop = 0.02 * L;
-    var bt = function (dx) { return yB + drop * (dx / hb) * (dx / hb); };
-    c.save();
-    c.shadowColor = 'rgba(0,0,0,0.5)'; c.shadowBlur = 8; c.shadowOffsetY = 4;
-    var bgr = c.createLinearGradient(0, yB - 0.02 * L, 0, yB + 0.06 * L);
-    bgr.addColorStop(0, '#ecd5a4'); bgr.addColorStop(1, '#b98b4e');
-    c.fillStyle = bgr;
-    c.beginPath(); c.moveTo(cx - hb, bt(-hb)); c.quadraticCurveTo(cx, yB - drop, cx + hb, bt(hb));
-    c.lineTo(cx + hb - 0.012 * L, yB + 0.055 * L); c.lineTo(cx + 0.062 * L, yB + 0.055 * L);
-    c.quadraticCurveTo(cx + 0.058 * L, yB + 0.028 * L, cx + 0.025 * L, yB + 0.026 * L);
-    c.lineTo(cx - 0.025 * L, yB + 0.026 * L);
-    c.quadraticCurveTo(cx - 0.058 * L, yB + 0.028 * L, cx - 0.062 * L, yB + 0.055 * L);
-    c.lineTo(cx - hb + 0.012 * L, yB + 0.055 * L); c.closePath(); c.fill();
-    c.restore();
-    c.fillStyle = 'rgba(60,30,10,0.55)';
-    [-1, 1].forEach(function (s) { c.beginPath(); c.ellipse(cx + s * 0.088 * L, yB + 0.022 * L, 0.018 * L, 0.008 * L, 0, 0, 6.3); c.fill(); });
-
-    // maple neck
-    var nh = function (y) { return fbHalf(Math.max((y - y0) / L, 0)) + L * 0.014; };
-    var ny = yJ + 0.05 * L;
-    c.save();
-    c.shadowColor = 'rgba(0,0,0,0.45)'; c.shadowBlur = 10;
-    var ng = c.createLinearGradient(cx - nh(ny), 0, cx + nh(ny), 0);
-    ng.addColorStop(0, '#5c230e'); ng.addColorStop(0.35, '#b0601f'); ng.addColorStop(0.5, '#c47a2c'); ng.addColorStop(1, '#4a1b0a');
-    c.fillStyle = ng;
-    c.beginPath(); c.moveTo(cx - nh(0), 0); c.lineTo(cx + nh(0), 0); c.lineTo(cx + nh(ny), ny); c.lineTo(cx - nh(ny), ny); c.closePath(); c.fill();
-    c.restore();
-
-    // ebony fingerboard
-    var fe = y0 + UFB * L;
-    c.save();
-    c.shadowColor = 'rgba(0,0,0,0.55)'; c.shadowBlur = 12; c.shadowOffsetY = 3;
-    var fg = c.createLinearGradient(cx - fbHalf(UFB), 0, cx + fbHalf(UFB), 0);
-    fg.addColorStop(0, '#0b0604'); fg.addColorStop(0.5, '#2b1a10'); fg.addColorStop(1, '#0b0604');
-    c.fillStyle = fg;
-    c.beginPath(); c.moveTo(cx - fbHalf(0), y0); c.lineTo(cx + fbHalf(0), y0); c.lineTo(cx + fbHalf(UFB), fe);
-    c.quadraticCurveTo(cx, fe + 0.025 * L, cx - fbHalf(UFB), fe); c.closePath(); c.fill();
-    c.shadowColor = 'transparent';
-    var gl = c.createLinearGradient(cx - fbHalf(UFB), 0, cx + fbHalf(UFB), 0);
-    gl.addColorStop(0.18, 'rgba(255,240,210,0)'); gl.addColorStop(0.30, 'rgba(255,240,210,0.10)'); gl.addColorStop(0.42, 'rgba(255,240,210,0)');
-    c.fillStyle = gl; c.fill();
-    c.restore();
-
-    // semitone marks (like finger tape on a student violin)
-    for (var n = 1; n <= MAXN; n++) {
-      var u = uFromN(n); if (u > MAXU) break;
-      var y = y0 + u * L, hw = fbHalf(u), major = (n % 12 === 0), len = major ? 16 : 7;
-      c.strokeStyle = major ? 'rgba(240,226,192,0.55)' : 'rgba(240,226,192,0.22)'; c.lineWidth = major ? 1.4 : 1;
-      c.beginPath(); c.moveTo(cx - hw + 2, y); c.lineTo(cx - hw + 2 + len, y); c.moveTo(cx + hw - 2, y); c.lineTo(cx + hw - 2 - len, y); c.stroke();
-    }
-
-    // nut and pegbox
-    var ngr = c.createLinearGradient(0, y0 - 4, 0, y0 + 1);
-    ngr.addColorStop(0, '#f6ecd0'); ngr.addColorStop(1, '#c9b48e');
-    c.fillStyle = ngr; c.fillRect(cx - fbHalf(0) - 2, y0 - 4, 2 * fbHalf(0) + 4, 5);
-    c.fillStyle = '#120a06';
-    c.fillRect(cx - nh(0) - 4, 6, 2 * nh(0) + 8, y0 - 10);
-    c.strokeStyle = 'rgba(227,169,77,0.3)'; c.lineWidth = 1; c.strokeRect(cx - nh(0) - 4, 6, 2 * nh(0) + 8, y0 - 10);
-    [-1, 1].forEach(function (s) {
-      [18, 40].forEach(function (py) {
-        var px = cx + s * (nh(0) + 16);
-        c.strokeStyle = '#1a0e08'; c.lineWidth = 4; c.beginPath(); c.moveTo(cx + s * (nh(0) + 3), py); c.lineTo(px, py); c.stroke();
-        var pg = c.createRadialGradient(px - 2, py - 2, 1, px, py, 8);
-        pg.addColorStop(0, '#3a2416'); pg.addColorStop(1, '#0d0704');
-        c.fillStyle = pg; c.beginPath(); c.arc(px, py, 7.5, 0, 6.3); c.fill();
-        c.strokeStyle = 'rgba(227,169,77,0.55)'; c.lineWidth = 1; c.stroke();
-      });
-    });
-  }
-
-  /* ---------- the animated layer: strings, finger, bow ---------- */
+  /* ---------- the live layer: vibrating strings, finger, bow ---------- */
   function mix(a, b, t) { return Math.round(a + (b - a) * t); }
   function drawBow() {
-    var L = G.L, y = G.y0 + 0.90 * L;
-    g.save(); g.translate(G.cx + bowOff, y); g.rotate(-0.03);
-    var bs = Math.min(1, (G.cx - 0.075 * L - 6) / (0.5 * L)); // keep the whole bow on narrow screens
-    var xl = -0.50 * L * bs, xr = 0.47 * L * bs;
+    g.save(); g.translate(XC + bowOff, YBOW); g.rotate(-0.025);
+    var xl = -BOW_HALF, xr = BOW_HALF - 4;
     g.lineCap = 'round';
-    g.shadowColor = 'rgba(0,0,0,0.5)'; g.shadowBlur = 8; g.shadowOffsetY = 5;
-    g.strokeStyle = 'rgba(244,234,208,0.92)'; g.lineWidth = Math.max(4, 0.012 * L);
-    g.beginPath(); g.moveTo(xl + 0.07 * L, 0); g.lineTo(xr - 0.015 * L, 0); g.stroke();
+    g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 8; g.shadowOffsetY = 4;
+    g.strokeStyle = 'rgba(244,234,208,0.93)'; g.lineWidth = 7;
+    g.beginPath(); g.moveTo(xl + 40, 0); g.lineTo(xr - 8, 0); g.stroke();
     g.shadowColor = 'transparent';
-    g.strokeStyle = '#2b140a'; g.lineWidth = Math.max(2.4, 0.0075 * L);
-    g.beginPath(); g.moveTo(xl + 0.06 * L, -0.022 * L); g.quadraticCurveTo(0, -0.036 * L, xr, -0.004 * L); g.stroke();
-    g.strokeStyle = 'rgba(214,150,80,0.55)'; g.lineWidth = 1;
-    g.beginPath(); g.moveTo(xl + 0.08 * L, -0.0235 * L); g.quadraticCurveTo(0, -0.0375 * L, xr - 0.02 * L, -0.0055 * L); g.stroke();
-    g.fillStyle = '#120708'; g.fillRect(xl, -0.036 * L, 0.075 * L, 0.04 * L);
-    g.strokeStyle = '#d6a24a'; g.lineWidth = 1.4; g.strokeRect(xl, -0.036 * L, 0.075 * L, 0.04 * L);
-    g.fillStyle = '#d6a24a'; g.fillRect(xl + 0.05 * L, -0.036 * L, 0.006 * L, 0.04 * L);
+    g.strokeStyle = '#2f160b'; g.lineWidth = 4.6;
+    g.beginPath(); g.moveTo(xl + 34, -13); g.quadraticCurveTo(0, -21, xr, -3); g.stroke();
+    g.strokeStyle = 'rgba(214,150,80,0.6)'; g.lineWidth = 1.2;
+    g.beginPath(); g.moveTo(xl + 40, -14.4); g.quadraticCurveTo(0, -22.4, xr - 10, -4.2); g.stroke();
+    g.fillStyle = '#120708'; g.fillRect(xl, -21, 42, 23);
+    g.strokeStyle = '#d6a24a'; g.lineWidth = 1.6; g.strokeRect(xl, -21, 42, 23);
+    g.fillStyle = '#d6a24a'; g.fillRect(xl + 30, -21, 4, 23);
     g.restore();
   }
   function draw() {
-    var L = G.L, y0 = G.y0, i;
+    var sc = G.sc, i, y;
+    g.setTransform(G.dpr, 0, 0, G.dpr, 0, 0);
     g.clearRect(0, 0, G.W, G.H);
-    g.drawImage(bg, 0, 0, G.W, G.H);
-    var sc = Math.max(0.7, Math.min(1.1, L / 430));
+    g.save(); g.translate(G.ox, G.oy); g.scale(sc, sc);
+
+    if (hover && !state.some(function (s) { return s.owner !== null; })) { // preview under the pointer
+      var hy = Math.min(Math.max(hover.y, YN), YB - 4);
+      g.lineCap = 'round';
+      g.strokeStyle = 'rgba(255,216,143,0.38)'; g.lineWidth = Math.max(WID[hover.i] * 1.7, 2.4 / sc);
+      g.beginPath(); g.moveTo(xs(hover.i, YN), YN); g.lineTo(xs(hover.i, YB), YB); g.stroke();
+      g.strokeStyle = 'rgba(255,227,166,0.9)'; g.lineWidth = 1.5 / sc;
+      g.beginPath(); g.arc(xs(hover.i, hy), hy, 8 / sc, 0, 6.3); g.stroke();
+    }
+
     for (i = 0; i < 4; i++) {
       var s = state[i], on = s.owner !== null;
-      var yf = on ? y0 + s.uf * L : y0, ye = endY(i);
-      var amp = reduce ? 0 : s.a * (5 + i * 1.4) * sc;
+      var yf = on ? yAt(s.uf) : YN, ye = YB;
+      var amp = reduce ? 0 : s.a * (3.8 + i * 0.9) / sc;
       var col = 'rgb(' + mix(217, 255, s.a) + ',' + mix(197, 216, s.a) + ',' + mix(156, 143, s.a) + ')';
-      var w = WIDTH[i] * sc, y, u, v;
-      if (on && yf > y0 + 1) { // the part of the string above the finger is silent
-        g.strokeStyle = 'rgba(217,197,156,0.45)'; g.lineWidth = w;
-        g.beginPath(); g.moveTo(sx(i, 0), y0); g.lineTo(sx(i, s.uf), yf); g.stroke();
-      }
+      var w = Math.max(WID[i], 1.5 / sc), v, d;
       if (s.a > 0.02 && amp > 0) {
-        g.lineWidth = w * 1.4; g.strokeStyle = 'rgba(255,214,140,' + (0.16 * s.a) + ')';
+        g.lineWidth = w * 1.5; g.strokeStyle = 'rgba(255,214,140,' + (0.2 * s.a) + ')';
         [1, -1].forEach(function (sign) {
           g.beginPath();
-          for (y = yf; y <= ye; y += 6) { v = (y - yf) / (ye - yf); g.lineTo(sx(i, (y - y0) / L) + sign * Math.sin(Math.PI * v) * amp, y); }
+          for (y = yf; y <= ye; y += 8) { v = (y - yf) / (ye - yf); g.lineTo(xs(i, y) + sign * Math.sin(Math.PI * v) * amp, y); }
           g.stroke();
         });
       }
-      g.lineWidth = w; g.strokeStyle = col;
-      g.shadowColor = 'rgba(255,200,110,' + s.a + ')'; g.shadowBlur = 16 * s.a;
-      g.beginPath();
-      for (y = yf; y <= ye + 5; y += 6) {
-        var yy = Math.min(y, ye);
-        u = (yy - y0) / L; v = (yy - yf) / (ye - yf);
-        var d = Math.sin(Math.PI * v) * amp * Math.sin(s.phase) + 0.3 * Math.sin(2 * Math.PI * v) * amp * Math.sin(s.phase * 2 + 1);
-        g.lineTo(sx(i, u) + d, yy);
+      if (s.a > 0.02) {
+        g.lineWidth = w; g.strokeStyle = col;
+        g.shadowColor = 'rgba(255,200,110,' + s.a + ')'; g.shadowBlur = 14 * s.a * G.dpr;
+        g.beginPath();
+        for (y = yf; y <= ye + 7; y += 8) {
+          var yy = Math.min(y, ye);
+          v = (yy - yf) / (ye - yf);
+          d = Math.sin(Math.PI * v) * amp * Math.sin(s.phase) + 0.3 * Math.sin(2 * Math.PI * v) * amp * Math.sin(s.phase * 2 + 1);
+          g.lineTo(xs(i, yy) + d, yy);
+        }
+        g.stroke(); g.shadowBlur = 0;
       }
-      g.stroke(); g.shadowBlur = 0;
     }
     drawBow();
     for (i = 0; i < 4; i++) { // finger and note name
       var t = state[i]; if (t.owner === null) continue;
-      var fy = y0 + t.uf * L, fx = sx(i, t.uf), r = Math.max(9, Math.min(13, 12 * sc));
-      var fgr = g.createRadialGradient(fx, fy, 1, fx, fy, r * 1.8);
+      var fy = yAt(t.uf), fx = xs(i, fy), r = 11 / sc;
+      var fgr = g.createRadialGradient(fx, fy, 1, fx, fy, r * 1.9);
       fgr.addColorStop(0, 'rgba(255,236,185,0.95)'); fgr.addColorStop(0.5, 'rgba(227,169,77,0.55)'); fgr.addColorStop(1, 'rgba(227,169,77,0)');
-      g.fillStyle = fgr; g.beginPath(); g.arc(fx, fy, r * 1.8, 0, 6.3); g.fill();
-      g.strokeStyle = '#ffe3a6'; g.lineWidth = 1.6; g.beginPath(); g.arc(fx, fy, r * 0.8, 0, 6.3); g.stroke();
+      g.fillStyle = fgr; g.beginPath(); g.arc(fx, fy, r * 1.9, 0, 6.3); g.fill();
+      g.strokeStyle = '#ffe3a6'; g.lineWidth = 1.7 / sc; g.beginPath(); g.arc(fx, fy, r * 0.78, 0, 6.3); g.stroke();
       var label = noteName(i, t.n);
-      g.font = 'italic ' + Math.round(20 * sc) + 'px "Instrument Serif", Georgia, serif';
+      g.font = 'italic ' + (21 / sc) + 'px "Instrument Serif", Georgia, serif';
       g.textAlign = 'right'; g.textBaseline = 'middle';
-      var lx = G.cx - fbHalf(t.uf) - 10;
-      g.lineWidth = 4; g.strokeStyle = 'rgba(10,5,3,0.85)'; g.strokeText(label, lx, fy);
+      var lx = xs(0, fy) - 16 / sc;
+      g.lineJoin = 'round'; g.lineWidth = 4.5 / sc; g.strokeStyle = 'rgba(10,5,3,0.9)'; g.strokeText(label, lx, fy);
       g.fillStyle = '#f6e7c6'; g.fillText(label, lx, fy);
     }
+    g.restore();
   }
   function frame(t) {
     var dt = Math.min(0.05, (t - last) / 1000 || 0.016), moving = false, act = false;
@@ -639,7 +496,7 @@
       s.phase += dt * Math.PI * 2 * (9 + 5 * Math.log2(hz(i, s.n) / 196));
     });
     bowT += dt;
-    var target = (act && !reduce) ? Math.sin(bowT * 2.2) * 0.075 * G.L : 0;
+    var target = (act && !reduce) ? Math.sin(bowT * 2.2) * 40 : 0;
     bowOff += (target - bowOff) * Math.min(1, dt * 6);
     if (Math.abs(bowOff) > 0.3) moving = true;
     draw();
@@ -762,17 +619,24 @@
     if (!state.some(function (x) { return x.owner !== null; })) { readout.textContent = ''; lastText = ''; }
     kick();
   }
-  function pitchFromU(u, yPx) {
-    if (yPx < 9) return 0;                       // open string zone near the nut
-    var n = -12 * Math.log2(1 - Math.min(u, MAXU));
+  function pitchFromT(t, cssFromNut) {
+    if (cssFromNut < 9) return 0;                 // open string zone next to the nut
+    var n = -12 * Math.log2(1 - Math.min(t, MAXU));
     n = Math.min(n, MAXN);
     return snap ? Math.round(n) : n;
   }
-  function hit(e) {
-    var r = canvas.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
-    var u = Math.min(Math.max((y - G.y0) / G.L, 0), 1), best = 0, bd = 1e9;
-    for (var i = 0; i < 4; i++) { var d = Math.abs(x - sx(i, u)); if (d < bd) { bd = d; best = i; } }
-    return { i: best, n: pitchFromU(u, y - G.y0) };
+  // pointer -> photo coordinates, nearest string, note
+  function hit(e, current) {
+    var r = canvas.getBoundingClientRect();
+    var ix = (e.clientX - r.left - G.ox) / G.sc, iy = (e.clientY - r.top - G.oy) / G.sc;
+    var t = Math.min(Math.max((iy - YN) / (YB - YN), 0), 1), y = yAt(t), best = 0, bd = 1e9, i;
+    for (i = 0; i < 4; i++) { var d = Math.abs(ix - xs(i, y)); if (d < bd) { bd = d; best = i; } }
+    // while dragging, stay on the current string until the pointer is clearly closer to another one
+    if (current !== undefined && current !== best) {
+      var dc = Math.abs(ix - xs(current, y)), gap = Math.abs(xs(best, y) - xs(current, y));
+      if (dc - bd < 0.35 * gap) best = current;
+    }
+    return { i: best, n: pitchFromT(t, (y - YN) * G.sc), y: y, iy: iy };
   }
   var active = {};
   play.addEventListener('pointerdown', function (e) {
@@ -780,15 +644,21 @@
     e.preventDefault();
     var h = hit(e); if (state[h.i].owner !== null) return;
     try { play.setPointerCapture(e.pointerId); } catch (x) {}
+    hover = null;
     active[e.pointerId] = h.i; begin('p' + e.pointerId, h.i, h.n);
   });
   play.addEventListener('pointermove', function (e) {
-    var i = active[e.pointerId]; if (i === undefined) return;
-    var h = hit(e);
+    var i = active[e.pointerId];
+    if (i === undefined) {
+      if (e.pointerType === 'mouse') { var hh = hit(e); hover = { i: hh.i, y: hh.iy }; kick(); }
+      return;
+    }
+    var h = hit(e, i);
     if (h.i !== i && state[h.i].owner === null) {          // crossing to another string, like a bow
       finish(i, 0.12); active[e.pointerId] = h.i; begin('p' + e.pointerId, h.i, h.n);
-    } else if (Math.abs(h.n - state[i].n) > 1e-3 && h.i === i) change(i, h.n);
+    } else if (h.i === i && Math.abs(h.n - state[i].n) > 1e-3) change(i, h.n);
   });
+  play.addEventListener('pointerleave', function (e) { if (active[e.pointerId] === undefined && hover) { hover = null; kick(); } });
   ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(function (ev) {
     play.addEventListener(ev, function (e) {
       var i = active[e.pointerId]; if (i === undefined) return;
@@ -817,18 +687,21 @@
 
   /* ---------- sizing ---------- */
   function placeControls() {
-    var pw = 0.50 * G.L, pl = G.cx - pw / 2;
-    play.style.left = pl + 'px'; play.style.top = '0px';
-    play.style.width = pw + 'px'; play.style.height = (G.yB + 0.06 * G.L) + 'px';
-    keys.forEach(function (b, i) { b.style.left = (sx(i, 0) - pl - 14) + 'px'; b.style.top = '10px'; });
+    var sc = G.sc, pl = G.ox + 60 * sc, pt = G.oy + (YN - 10) * sc;
+    play.style.left = pl + 'px'; play.style.top = pt + 'px';
+    play.style.width = (250 * sc) + 'px'; play.style.height = ((YB - YN + 22) * sc) + 'px';
+    img.style.left = G.ox + 'px'; img.style.top = G.oy + 'px';
+    img.style.width = (IMG_W * sc) + 'px'; img.style.height = (IMG_H * sc) + 'px';
+    keys.forEach(function (b, i) {
+      b.style.left = (G.ox + xs(i, YN) * sc - 11 - pl) + 'px';
+      b.style.top = (G.oy + (YN - 6) * sc - 11 - pt) + 'px';
+    });
   }
   function resize() {
-    var dpr = window.devicePixelRatio || 1;
     layout();
     if (G.W < 20 || G.H < 20) return;   // board is hidden (collapsed on phones)
-    [canvas, bg].forEach(function (c) { c.width = Math.round(G.W * dpr); c.height = Math.round(G.H * dpr); });
-    g.setTransform(dpr, 0, 0, dpr, 0, 0); bgc.setTransform(dpr, 0, 0, dpr, 0, 0);
-    drawStatic(); placeControls(); draw();
+    canvas.width = Math.round(G.W * G.dpr); canvas.height = Math.round(G.H * G.dpr);
+    placeControls(); draw();
   }
   var vio = document.getElementById('violin'), tg = document.getElementById('violin-toggle');
   tg.addEventListener('click', function () {
