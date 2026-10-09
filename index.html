@@ -213,7 +213,7 @@
     <p class="tag">Violinist. Soloist, concertmaster and chamber musician from Ottawa.</p>
     <p class="hero-links">
       <a class="copy-btn" href="#listen">Watch and listen</a>
-      <a class="copy-btn" href="#about">Play the violin</a>
+      <a class="copy-btn" href="#about">Play on my violin</a>
     </p>
   </div>
   <figure class="hero-photo">
@@ -231,7 +231,7 @@
       <p>For more than five years, Vincent has performed in concerts around Ottawa that have raised over $20,000 for local food banks and refugee initiatives. Away from music, he races dragon boats and is training for the Ottawa Marathon.</p>
     </div>
     <div class="violin" id="violin">
-      <button type="button" class="copy-btn violin-toggle" id="violin-toggle" aria-expanded="false" aria-controls="violin-body">Play the violin</button>
+      <button type="button" class="copy-btn violin-toggle" id="violin-toggle" aria-expanded="false" aria-controls="violin-body">Play on my violin</button>
       <div class="violin-body" id="violin-body">
         <p class="hint">Hold a string to bow it. Slide up and down to change the note. Strings, left to right: G, D, A, E.</p>
         <div class="violin-top">
@@ -752,7 +752,7 @@
   tg.addEventListener('click', function () {
     var open = vio.classList.toggle('open');
     tg.setAttribute('aria-expanded', open ? 'true' : 'false');
-    tg.textContent = open ? 'Hide the violin' : 'Play the violin';
+    tg.textContent = open ? 'Hide my violin' : 'Play on my violin';
     if (!open) state.forEach(function (s, i) { if (s.owner !== null) finish(i); });
   });
   document.querySelectorAll('.hero-links a[href="#about"]').forEach(function (a) {
