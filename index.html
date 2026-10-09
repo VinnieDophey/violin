@@ -163,6 +163,20 @@
   }
   .copy-btn:hover { background: rgba(227, 169, 77, 0.14); color: var(--gold); }
 
+  .contact-form { display: grid; gap: 0.35rem; max-width: 56ch; margin-top: 1.4rem; }
+  .contact-form label { font-weight: 500; margin-top: 0.8rem; }
+  .contact-form input[type="text"], .contact-form input[type="email"], .contact-form textarea {
+    width: 100%; font: inherit; font-size: 1rem; color: var(--spruce); background: var(--ebony-2);
+    border: 1px solid rgba(240, 226, 192, 0.3); border-radius: 3px; padding: 0.7rem 0.8rem;
+  }
+  .contact-form textarea { resize: vertical; min-height: 9rem; }
+  .contact-form input:focus-visible, .contact-form textarea:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; border-color: var(--gold); }
+  .contact-form .hp { display: none; }
+  .form-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem 1rem; margin-top: 1.1rem; }
+  .copy-btn:disabled { opacity: 0.6; cursor: default; }
+  .form-status.ok { color: var(--gold); }
+  .form-status.err { color: #f0a58c; }
+
   footer { padding: 2rem clamp(1.25rem, 5vw, 4rem) 3rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9rem; }
 
   @media (max-width: 800px) {
@@ -349,10 +363,23 @@
   <section id="contact">
     <h2>Contact</h2>
     <div class="body">
-      <p>For concerts, collaborations and press, write to:</p>
-      <p class="contact-link" id="email-text">VincentPham1210 [at] gmail [dot] com</p>
-      <p class="muted">To protect against spam, the address is written out. Replace [at] with @ and [dot] with a period, or copy it with the button.</p>
-      <p><button type="button" class="copy-btn" id="copy-email">Copy email address</button> <span id="copy-status" class="muted" role="status"></span></p>
+      <p>For concerts, collaborations and press, send Vincent a message.</p>
+      <form class="contact-form" id="contact-form">
+        <input type="hidden" name="access_key" value="97a2551c-dbe6-4913-85cc-c15e22753c91">
+        <input type="hidden" name="subject" value="New message from vincentpham.com">
+        <input type="hidden" name="from_name" value="vincentpham.com">
+        <input type="checkbox" name="botcheck" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <label for="cf-name">Your name</label>
+        <input id="cf-name" name="name" type="text" required maxlength="100" autocomplete="name">
+        <label for="cf-email">Your email</label>
+        <input id="cf-email" name="email" type="email" required maxlength="200" autocomplete="email">
+        <label for="cf-message">Message</label>
+        <textarea id="cf-message" name="message" rows="6" required maxlength="3000"></textarea>
+        <div class="form-row">
+          <button type="submit" class="copy-btn" id="cf-send">Send message</button>
+          <span id="cf-status" class="form-status" role="status" aria-live="polite"></span>
+        </div>
+      </form>
     </div>
   </section>
 </main>
@@ -362,16 +389,30 @@
 <script>
 (function () {
   document.getElementById('year').textContent = new Date().getFullYear();
+})();
 
-  // The email address is never written in the page in full: it is assembled only when copied.
-  var btn = document.getElementById('copy-email'), status = document.getElementById('copy-status');
-  if (btn) btn.addEventListener('click', function () {
-    var addr = ['VincentPham1210', 'gmail', 'com'];
-    var text = addr[0] + String.fromCharCode(64) + addr[1] + String.fromCharCode(46) + addr[2];
-    var done = function (msg) { status.textContent = msg; setTimeout(function () { status.textContent = ''; }, 3000); };
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(text).then(function () { done('Copied.'); }, function () { done('Copy failed. Please type the address.'); });
-    } else { done('Copy is not available. Please type the address.'); }
+/* ================= Contact form (sent through Web3Forms) ================= */
+(function () {
+  var form = document.getElementById('contact-form'); if (!form) return;
+  var btn = document.getElementById('cf-send'), st = document.getElementById('cf-status');
+  function say(msg, cls) { st.textContent = msg; st.className = 'form-status' + (cls ? ' ' + cls : ''); }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!form.reportValidity()) return;
+    var data = {}; new FormData(form).forEach(function (v, k) { data[k] = v; });
+    btn.disabled = true; btn.textContent = 'Sending'; say('');
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify(data)
+    }).then(function (r) {
+      return r.json().then(function (j) { return { ok: r.ok, j: j }; }, function () { return { ok: false, j: {} }; });
+    }).then(function (x) {
+      if (!(x.ok && x.j && x.j.success)) throw new Error('not sent');
+      form.reset(); say('Message sent. Thank you.', 'ok');
+    }).catch(function () {
+      say('The message was not sent. Check your connection and try again.', 'err');
+    }).then(function () { btn.disabled = false; btn.textContent = 'Send message'; });
   });
 })();
 
