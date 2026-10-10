@@ -741,7 +741,7 @@
   var lastText = '';
   function show(i, n) {
     var c = Math.round((n - Math.round(n)) * 100);
-    var txt = noteName(i, n) + ', ' + Math.round(hz(i, n)) + ' Hz' + (Math.abs(c) >= 4 ? ' (' + (c > 0 ? '+' : '') + c + ' cents)' : '');
+    var txt = noteName(i, n) + (Math.abs(c) >= 4 ? ' (' + (c > 0 ? '+' : '') + c + ' cents)' : '');
     if (txt !== lastText) { readout.textContent = txt; lastText = txt; }
   }
   function begin(owner, i, n) {
