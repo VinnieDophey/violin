@@ -48,35 +48,96 @@
   .nav a { text-decoration: none; color: rgba(240, 226, 192, 0.78); }
   .nav a:hover { color: var(--gold); }
 
-  /* Hero: varnish gradient with a playable fingerboard */
+  /* Hero with Video Background & Dark Professional Overlay */
   .hero {
     position: relative;
     min-height: 100vh; min-height: 100svh;
-    display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
-    gap: clamp(1.5rem, 5vw, 5rem);
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(300px, 460px);
+    gap: clamp(2rem, 5vw, 5rem);
     align-items: center;
-    padding: 6.5rem clamp(1.25rem, 5vw, 4rem) 0;
-    background:
-      radial-gradient(55% 70% at 76% 42%, rgba(255, 186, 96, 0.30), transparent 70%),
-      linear-gradient(105deg, #1f0a04 0%, #4a190b 40%, #8a3d15 74%, #b4621f 100%);
+    padding: 6.5rem clamp(1.25rem, 5vw, 4rem) 4rem;
     overflow: hidden;
   }
-  .hero-text { align-self: end; padding-bottom: 5rem; }
+
+  /* Looping Background Video */
+  .hero-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+  }
+
+  /* Dark Professional Overlay */
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background:
+      radial-gradient(60% 60% at 70% 40%, rgba(23, 16, 12, 0.45), rgba(23, 16, 12, 0.88) 100%),
+      linear-gradient(180deg, rgba(23, 16, 12, 0.75) 0%, rgba(23, 16, 12, 0.85) 100%);
+  }
+
+  .hero-text {
+    position: relative;
+    z-index: 2;
+    max-width: 48ch;
+  }
   .hero h1 {
     font-family: var(--serif); font-weight: 400;
     font-size: clamp(3.6rem, 10.5vw, 9.5rem);
     line-height: 0.9; letter-spacing: -0.025em; margin: 0 0 1.6rem;
     color: #fbf0d4;
+    text-shadow: 0 10px 30px rgba(0,0,0,0.6);
   }
   .hero .tag { margin: 0; max-width: 32ch; font-size: 1.25rem; color: #ecd9b0; }
-  .hero .hint { margin: 1.6rem 0 0; font-family: var(--serif); font-style: italic; font-size: 1.25rem; color: var(--gold); }
+
+  /* Hero Violin Container on Right Handside (borderless) */
+  .hero-violin-col {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .hero-violin-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .readout {
+    margin: 0;
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    line-height: 1.1;
+    color: #fbf0d4;
+    min-height: 2rem;
+    display: flex;
+    align-items: center;
+  }
+
+  .violin .hint {
+    margin: 0;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: 1.05rem;
+    color: var(--gold);
+    line-height: 1.4;
+  }
 
   .board {
-    position: relative; align-self: end;
-    height: min(84vh, 780px);
+    position: relative;
+    width: 100%;
+    height: min(65vh, 520px);
     background: radial-gradient(85% 60% at 50% 38%, #3a190c 0%, #1a0d07 62%, #0d0603 100%);
-    border-radius: 10px;
-    box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.10), 0 30px 70px rgba(0, 0, 0, 0.45);
+    border-radius: 8px;
+    box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.10), 0 20px 40px rgba(0, 0, 0, 0.45);
     overflow: hidden;
   }
   .violin-img { position: absolute; max-width: none; pointer-events: none; -webkit-user-select: none; user-select: none; filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.6)); }
@@ -94,16 +155,6 @@
 
   .hero-links { margin: 1.8rem 0 0; display: flex; flex-wrap: wrap; gap: 0.8rem; }
   a.copy-btn { display: inline-block; text-decoration: none; color: #fbf0d4; }
-  .hero-photo { margin: 0; align-self: end; height: min(76vh, 720px); position: relative; }
-  .hero-photo img {
-    display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%;
-    border-radius: 10px 10px 0 0;
-    box-shadow: 0 40px 90px rgba(0, 0, 0, 0.5);
-  }
-  .hero-photo::after { content: ""; position: absolute; inset: 0; border-radius: 10px 10px 0 0; box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.28); pointer-events: none; }
-  .violin .hint { margin: 0 0 0.7rem; font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--gold); }
-  .violin-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.8rem; min-height: 2.6rem; }
-  .readout { margin: 0; font-family: var(--serif); font-size: 1.9rem; line-height: 1.1; color: #fbf0d4; }
   .violin-toggle { display: none; }
 
   /* Sections */
@@ -122,10 +173,13 @@
   .body p { margin: 0 0 1.15em; }
   .body p:last-child { margin-bottom: 0; }
 
-  .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 340px); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; }
+  .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; max-width: 76ch; }
+  
+  /* Portrait Photo Styling */
+  .training-grid { display: grid; grid-template-columns: 1fr; gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; max-width: 68ch; }
   .portrait { margin: 0; position: relative; }
-  .portrait img { display: block; width: 100%; height: auto; border-radius: 3px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); }
-  .portrait::after { content: ""; position: absolute; inset: 0; border-radius: 3px; box-shadow: inset 0 0 0 1px rgba(227, 169, 77, 0.35); pointer-events: none; }
+  .portrait img { display: block; width: 100%; height: auto; border-radius: 6px; box-shadow: 0 24px 60px rgba(0, 0, 0, 0.45); }
+  .portrait::after { content: ""; position: absolute; inset: 0; border-radius: 6px; box-shadow: inset 0 0 0 1px rgba(227, 169, 77, 0.35); pointer-events: none; }
 
   .rep { margin: 0; max-width: 68ch; }
   .rep dt { font-family: var(--serif); font-style: italic; font-size: 1.4rem; color: var(--gold); margin-top: 1.7rem; }
@@ -179,19 +233,15 @@
 
   footer { padding: 2rem clamp(1.25rem, 5vw, 4rem) 3rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9rem; }
 
-  @media (max-width: 800px) {
-    .hero { grid-template-columns: 1fr; padding-top: 7.5rem; gap: 1.5rem; min-height: auto; }
-    .hero-text { padding-bottom: 0; }
-    .board { height: 72vh; min-height: 480px; max-height: 640px; max-width: 360px; margin: 0 auto; }
-    .hero-photo { height: 58vh; min-height: 360px; max-height: 560px; }
-    .violin-toggle { display: inline-block; }
-    .violin-body { display: none; margin-top: 1rem; }
-    .violin.open .violin-body { display: block; }
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 7.5rem; gap: 2.5rem; }
+    .hero-violin-col { max-width: 420px; margin: 0 auto; width: 100%; }
+    .board { height: 60vh; min-height: 400px; max-height: 520px; }
     main section { grid-template-columns: 1fr; gap: 1.25rem; }
     main h2 { position: static; }
     .ledger .row { grid-template-columns: 1fr; gap: 0.4rem; }
     .about-grid { grid-template-columns: 1fr; }
-    .portrait { order: -1; max-width: 340px; }
+    .portrait { max-width: 340px; margin: 0 auto 1.5rem; order: -1; }
   }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
@@ -208,70 +258,78 @@
 </nav>
 
 <header class="hero">
+  <!-- Looping Background Video -->
+  <video class="hero-video" autoplay muted loop playsinline>
+    <source src="VincentWebBackground.mp4" type="video/mp4">
+  </video>
+  
+  <!-- Dark Professional Overlay -->
+  <div class="hero-overlay"></div>
+
   <div class="hero-text">
     <h1>Vincent<br>Pham</h1>
     <p class="tag">Violinist. Soloist, concertmaster and chamber musician from Ottawa.</p>
     <p class="hero-links">
-        <a class="copy-btn" href="#about">Play Vincent's Violin</a>
       <a class="copy-btn" href="#listen">Watch and Listen</a>
     </p>
   </div>
-  <figure class="hero-photo">
-    <img src="vincent.jpg" alt="Portrait of Vincent Pham" width="1000" height="1250">
-  </figure>
+
+  <!-- Interactive Violin Widget on the Right Handside of Hero (Borderless) -->
+  <div class="hero-violin-col violin" id="violin">
+    <div class="hero-violin-top">
+      <button type="button" class="copy-btn play-music" id="play-music">Play Vincent's Music</button>
+      <p class="readout" id="readout" role="status" aria-live="polite"></p>
+      <audio id="audio-sibelius" src="Sibelius.mp3" preload="metadata"></audio>
+    </div>
+    <p class="hint">Hold a string to bow it and slide to change the note. Move faster for a louder tone, wiggle for vibrato, tap for pizzicato. Strings, left to right: G, D, A, E.</p>
+    <div class="board" id="board">
+      <img class="violin-img" id="violin-img" src="violin.webp" alt="Vincent's violin" width="424" height="1140" loading="lazy" decoding="async" draggable="false">
+      <canvas id="strings" aria-hidden="true"></canvas>
+      <div class="play" id="play" role="group" aria-label="Violin strings, left to right: G, D, A, E. Press and hold to bow. Drag up and down to change the note. With the keyboard, hold Enter on a string and use the arrow keys to change the note.">
+        <button class="key" aria-label="G string"><span>G</span></button>
+        <button class="key" aria-label="D string"><span>D</span></button>
+        <button class="key" aria-label="A string"><span>A</span></button>
+        <button class="key" aria-label="E string"><span>E</span></button>
+      </div>
+    </div>
+  </div>
 </header>
 
 <main>
   <section id="about">
     <h2>About</h2>
     <div class="about-grid">
-    <div class="body">
-      <p>Vincent Pham is a 16-year-old violinist from Ottawa, Ontario, and a student in the International Baccalaureate program. He studies in the studio of Prof. Van der Sloot, is enrolled at the Conservatoire de musique de Gatineau and the University of Ottawa Pre-College Program, and holds the Associate Diploma (ARCT) from the Royal Conservatory of Music.</p>
-      <p>In 2025 he placed third in the Strings 15 to 18 category of the Canadian Music Competition, competing at age 15. He has appeared as soloist and concertmaster with the Conservatoire de musique de Gatineau and the Vyhovskyi Senior Strings, and plays chamber music in a quartet that won the Aruna-Rupa Anantaraman Trophy for Senior Chamber in 2026. In summer 2026 he attended Juilliard Summer Music in New York, with private lessons, masterclasses and a highlight concert performance.</p>
-      <p>For more than five years, Vincent has performed in concerts around Ottawa that have raised over $20,000 for local food banks and refugee initiatives. Away from music, he races dragon boats and is training for the Ottawa Marathon.</p>
-    </div>
-    <div class="violin" id="violin">
-      <button type="button" class="copy-btn violin-toggle" id="violin-toggle" aria-expanded="false" aria-controls="violin-body">Play on my violin</button>
-      <div class="violin-body" id="violin-body">
-        <p class="hint">Hold a string to bow it and slide to change the note. Move faster for a louder tone, wiggle for vibrato, tap for pizzicato. Strings, left to right: G, D, A, E.</p>
-        <div class="violin-top">
-          <p class="readout" id="readout" role="status" aria-live="polite"></p>
-          <button type="button" class="copy-btn play-music" id="play-music">Play Vincent's Music</button>
-          <audio id="audio-sibelius" src="Sibelius.mp3" preload="metadata"></audio>
-        </div>
-        <div class="board" id="board">
-          <img class="violin-img" id="violin-img" src="violin.webp" alt="Vincent's violin" width="424" height="1140" loading="lazy" decoding="async" draggable="false">
-          <canvas id="strings" aria-hidden="true"></canvas>
-          <div class="play" id="play" role="group" aria-label="Violin strings, left to right: G, D, A, E. Press and hold to bow. Drag up and down to change the note. With the keyboard, hold Enter on a string and use the arrow keys to change the note.">
-            <button class="key" aria-label="G string"><span>G</span></button>
-            <button class="key" aria-label="D string"><span>D</span></button>
-            <button class="key" aria-label="A string"><span>A</span></button>
-            <button class="key" aria-label="E string"><span>E</span></button>
-          </div>
-        </div>
+      <div class="body">
+        <p>Vincent Pham is a 16-year-old violinist from Ottawa, Ontario, and a student in the International Baccalaureate program. He studies in the studio of Prof. Van der Sloot, is enrolled at the Conservatoire de musique de Gatineau and the University of Ottawa Pre-College Program, and holds the Associate Diploma (ARCT) from the Royal Conservatory of Music.</p>
+        <p>In 2025 he placed third in the Strings 15 to 18 category of the Canadian Music Competition, competing at age 15. He has appeared as soloist and concertmaster with the Conservatoire de musique de Gatineau and the Vyhovskyi Senior Strings, and plays chamber music in a quartet that won the Aruna-Rupa Anantaraman Trophy for Senior Chamber in 2026. In summer 2026 he attended Juilliard Summer Music in New York, with private lessons, masterclasses and a highlight concert performance.</p>
+        <p>For more than five years, Vincent has performed in concerts around Ottawa that have raised over $20,000 for local food banks and refugee initiatives. Away from music, he races dragon boats and is training for the Ottawa Marathon.</p>
       </div>
-    </div>
+      <figure class="portrait">
+        <img src="vincent.jpg" alt="Portrait of Vincent Pham" width="1000" height="1250" loading="lazy">
+      </figure>
     </div>
   </section>
 
   <section id="training">
     <h2>Training</h2>
-    <dl class="rep">
-      <dt>Studio</dt>
-      <dd>Prof. Van der Sloot, University of Ottawa. Solo and chamber principal violinist in the University of Ottawa Pre-College Program.</dd>
-      <dt>Conservatoire de musique de Gatineau</dt>
-      <dd>Studies with Marjolaine Lambert and Tobie Slippert. Soloist and concertmaster, and the youngest musician ever invited into the college-level chamber groups.</dd>
-      <dt>Royal Conservatory of Music</dt>
-      <dd>Associate Diploma (ARCT) in Violin Performance, 2025.</dd>
-      <dt>Juilliard Summer Music, 2026</dt>
-      <dd>Private lessons and masterclasses in New York with Ron Copes, Stella Chen, Curtis Stewart and Juliette Kang. Performed at the Juilliard School's Peter Jay Sharp Theatre at Lincoln Center, and in the program's highlight concert.</dd>
-      <dt>Summer programs</dt>
-      <dd>Domaine Forget de Charlevoix. University of Ottawa Summer String Academy. Masterclass in Austria.</dd>
-      <dt>Masterclasses</dt>
-      <dd>Stella Chen, Ron Copes, Juliette Kang, Curtis Stewart, Lara St. John, Andrew Wan, Jonathan Crow, Karen Gomyo, Timothy Chooi, Kerson Leong, Yosuke Kawasaki, Ute Hasenauer, Marjolaine Lambert, Gwen Hoebig and others.</dd>
-      <dt>Ensembles</dt>
-      <dd>Concertmaster of the Vyhovskyi Senior Strings Ensemble, and concertmaster with thirteen string orchestras.</dd>
-    </dl>
+    <div class="training-grid">
+      <dl class="rep">
+        <dt>Studio</dt>
+        <dd>Prof. Van der Sloot, University of Ottawa. Solo and chamber principal violinist in the University of Ottawa Pre-College Program.</dd>
+        <dt>Conservatoire de musique de Gatineau</dt>
+        <dd>Studies with Marjolaine Lambert and Tobie Slippert. Soloist and concertmaster, and the youngest musician ever invited into the college-level chamber groups.</dd>
+        <dt>Royal Conservatory of Music</dt>
+        <dd>Associate Diploma (ARCT) in Violin Performance, 2025.</dd>
+        <dt>Juilliard Summer Music, 2026</dt>
+        <dd>Private lessons and masterclasses in New York with Ron Copes, Stella Chen, Curtis Stewart and Juliette Kang. Performed at the Juilliard School's Peter Jay Sharp Theatre at Lincoln Center, and in the program's highlight concert.</dd>
+        <dt>Summer programs</dt>
+        <dd>Domaine Forget de Charlevoix. University of Ottawa Summer String Academy. Masterclass in Austria.</dd>
+        <dt>Masterclasses</dt>
+        <dd>Stella Chen, Ron Copes, Juliette Kang, Curtis Stewart, Lara St. John, Andrew Wan, Jonathan Crow, Karen Gomyo, Timothy Chooi, Kerson Leong, Yosuke Kawasaki, Ute Hasenauer, Marjolaine Lambert, Gwen Hoebig and others.</dd>
+        <dt>Ensembles</dt>
+        <dd>Concertmaster of the Vyhovskyi Senior Strings Ensemble, and concertmaster with thirteen string orchestras.</dd>
+      </dl>
+    </div>
   </section>
 
   <section id="awards">
@@ -867,16 +925,6 @@
     canvas.width = Math.round(G.W * G.dpr); canvas.height = Math.round(G.H * G.dpr);
     placeControls(); draw();
   }
-  var vio = document.getElementById('violin'), tg = document.getElementById('violin-toggle');
-  tg.addEventListener('click', function () {
-    var open = vio.classList.toggle('open');
-    tg.setAttribute('aria-expanded', open ? 'true' : 'false');
-    tg.textContent = open ? 'Hide my violin' : 'Play on my violin';
-    if (!open) { stopDemo(); state.forEach(function (s, i) { if (s.owner !== null) finish(i); }); }
-  });
-  document.querySelectorAll('.hero-links a[href="#about"]').forEach(function (a) {
-    a.addEventListener('click', function () { if (window.matchMedia('(max-width: 800px)').matches && !vio.classList.contains('open')) tg.click(); });
-  });
   if ('ResizeObserver' in window) new ResizeObserver(resize).observe(board);
   window.addEventListener('resize', resize);
   resize();
