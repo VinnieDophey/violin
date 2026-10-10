@@ -42,7 +42,7 @@
   /* Navigation Base */
   .nav {
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-    pointer-events: none; /* Let clicks pass through empty spaces */
+    pointer-events: none;
   }
 
   .nav-container {
@@ -52,7 +52,7 @@
     pointer-events: auto;
   }
 
-  /* Expanded Top Links (Visible at the very top of page) */
+  /* Expanded Top Links */
   .nav-links {
     display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2rem);
     font-size: 0.9rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em;
@@ -75,9 +75,7 @@
     top: 1.25rem;
     right: 1.25rem;
     z-index: 102;
-    background: rgba(23, 16, 12, 0.85);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: rgba(23, 16, 12, 0.92);
     border: 1px solid var(--rule);
     border-radius: 50%;
     color: var(--spruce);
@@ -93,7 +91,7 @@
   .menu-toggle:hover {
     border-color: var(--gold);
     color: var(--gold);
-    background: rgba(23, 16, 12, 0.95);
+    background: rgba(23, 16, 12, 0.98);
     transform: scale(1.05);
   }
 
@@ -104,16 +102,15 @@
     display: block; width: 100%; height: 2px; background: currentColor; border-radius: 1px; transition: transform 0.2s ease, opacity 0.2s ease;
   }
 
-  /* Display purely floating button on scroll or on mobile screens */
+  /* Display floating button on scroll or mobile */
   .nav.scrolled .menu-toggle {
     display: flex;
   }
 
-  /* Slide-down Fullscreen Drawer Overlay Menu */
+  /* Drawer Overlay Menu - Optimized background without heavy blur */
   .menu-drawer {
     position: fixed; inset: 0; z-index: 101;
-    background: rgba(18, 12, 9, 0.96);
-    backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    background: rgba(18, 12, 9, 0.98);
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     gap: 2rem; opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
   }
@@ -128,7 +125,7 @@
     color: var(--gold); transform: translateY(-2px);
   }
 
-  /* Hero with Video Background & Dark Professional Overlay */
+  /* Hero with Video Background & Overlay */
   .hero {
     position: relative;
     min-height: 100vh; min-height: 100svh;
@@ -140,7 +137,7 @@
     overflow: hidden;
   }
 
-  /* Looping Background Video */
+  /* Looping Background Video - Hardware Accelerated */
   .hero-video {
     position: absolute;
     inset: 0;
@@ -148,6 +145,8 @@
     height: 100%;
     object-fit: cover;
     z-index: 0;
+    will-change: transform;
+    transform: translateZ(0);
   }
 
   /* Dark Professional Overlay */
@@ -364,12 +363,10 @@
 </div>
 
 <header class="hero">
-  <!-- Looping Background Video -->
-  <video class="hero-video" autoplay muted loop playsinline>
+  <video class="hero-video" autoplay muted loop playsinline poster="vincent.jpg">
     <source src="VincentWebBackground.mp4" type="video/mp4">
   </video>
   
-  <!-- Dark Professional Overlay -->
   <div class="hero-overlay"></div>
 
   <div class="hero-text">
@@ -384,7 +381,7 @@
     <h2>About</h2>
     <div class="about-grid">
       <div class="body">
-        <p>Vincent Pham is a 16-year-old violinist from Ottawa, Ontario, and a student in the International Baccalaureate program. He studies in the studio of Prof. Van der Sloot, is enrolled at the Conservatoire de musique de Gatineau and the University of Ottawa Pre-College Program, and holds the Associate Diploma (ARCT) from the Royal Conservatory of Music.</p>
+        <p>Vincent Pham is a 16-year-old violinist from Ottawa, Ontario, and a student in the International Baccalaureate program. He studies with Marjolaine Lambert and in the studio of Prof. Michael Van der Sloot, is enrolled at the Conservatoire de musique de Gatineau and the University of Ottawa Pre-College Program, and holds the Associate Diploma (ARCT) from the Royal Conservatory of Music.</p>
         <p>In 2025 he placed third in the Strings 15 to 18 category of the Canadian Music Competition, competing at age 15. He has appeared as soloist and concertmaster with the Conservatoire de musique de Gatineau and the Vyhovskyi Senior Strings, and plays chamber music in a quartet that won the Aruna-Rupa Anantaraman Trophy for Senior Chamber in 2026. In summer 2026 he attended Juilliard Summer Music in New York, with private lessons, masterclasses and a highlight concert performance.</p>
         <p>For more than five years, Vincent has performed in concerts around Ottawa that have raised over $20,000 for local food banks and refugee initiatives. Away from music, he races dragon boats and is training for the Ottawa Marathon.</p>
       </div>
@@ -394,7 +391,6 @@
     </div>
   </section>
 
-  <!-- Interactive Violin Section (Placed right after About) -->
   <div class="violin-section violin" id="violin">
     <div class="violin-container">
       <div class="hero-violin-top">
@@ -432,8 +428,10 @@
         <dd>Domaine Forget de Charlevoix. University of Ottawa Summer String Academy. Masterclass in Austria.</dd>
         <dt>Masterclasses</dt>
         <dd>Stella Chen, Ron Copes, Juliette Kang, Curtis Stewart, Lara St. John, Andrew Wan, Jonathan Crow, Karen Gomyo, Timothy Chooi, Kerson Leong, Yosuke Kawasaki, Ute Hasenauer, Marjolaine Lambert, Gwen Hoebig and others.</dd>
+        <dt>Vyhovskyi Strings</dt>
+        <dd>Studies with Serhii and Olena Vyhovskyi, concertmaster of the Vyhovskyi Senior Strings.</dd>
         <dt>Ensembles</dt>
-        <dd>Concertmaster of the Vyhovskyi Senior Strings Ensemble, and concertmaster with thirteen string orchestras.</dd>
+        <dd>Concertmaster of the Conservatoire de musique de Gatineau orchestra, Concertmaster of the Vyhovskyi Senior Strings Ensemble, and concertmaster with thirteen string orchestras.</dd>
       </dl>
     </div>
   </section>
@@ -563,7 +561,6 @@
   var drawer = document.getElementById('menu-drawer');
   var drawerLinks = drawer.querySelectorAll('a');
 
-  // Scroll detection to trigger floating icon
   window.addEventListener('scroll', function () {
     if (window.scrollY > 80) {
       nav.classList.add('scrolled');
@@ -572,7 +569,6 @@
     }
   });
 
-  // Toggle drawer open/close
   function toggleDrawer() {
     var isOpen = drawer.classList.toggle('open');
     toggleBtn.setAttribute('aria-expanded', isOpen);
@@ -588,9 +584,25 @@
       document.body.style.overflow = '';
     });
   });
+
+  // Fermer le menu si l'utilisateur clique en dehors des liens (sur le fond du drawer)
+  drawer.addEventListener('click', function (e) {
+    if (e.target === drawer) {
+      drawer.classList.remove('open');
+      toggleBtn.setAttribute('aria-expanded', 'false');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Close drawer on Escape key for better keyboard navigation
+  window.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && drawer.classList.contains('open')) {
+      toggleDrawer();
+    }
+  });
 })();
 
-/* ================= Contact form (sent through Web3Forms) ================= */
+/* ================= Contact form (Web3Forms) ================= */
 (function () {
   var form = document.getElementById('contact-form'); if (!form) return;
   var btn = document.getElementById('cf-send'), st = document.getElementById('cf-status');
@@ -615,7 +627,7 @@
   });
 })();
 
-/* ================= The violin (a photo, with live strings on top) ================= */
+/* ================= Interactive Violin (Canvas + Web Audio API) ================= */
 (function () {
   var board = document.getElementById('board'), canvas = document.getElementById('strings'), play = document.getElementById('play');
   var img = document.getElementById('violin-img');
@@ -627,16 +639,14 @@
   var isDemo = false;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
-  var MIDI0 = [55, 62, 69, 76];          // G3 D4 A4 E5
-  var MAXN = 24, MAXU = 0.75;            // two octaves above the open string
+  var MIDI0 = [55, 62, 69, 76];
+  var MAXN = 24, MAXU = 0.75;
   var state = MIDI0.map(function () { return { a: 0, phase: Math.random() * 6.28, owner: null, n: 0, uf: 0, kn: 0, lv: 1 }; });
   var raf = null, last = 0, bowOff = 0, bowT = 0, hover = null, bowSpd = 0, demo = false;
 
-  /* ---------- the photo: all numbers are pixels of violin.webp (424 x 1140) ---------- */
   var IMG_W = 424, IMG_H = 1140;
-  var YN = 171, YB = 756;                // nut and bridge, where the strings begin and end
+  var YN = 171, YB = 756;
   var XC = 186, BOW_HALF = 240, YBOW = 706;
-  // each string is a straight line x = a + b * (y - y0), measured on the photo
   var FIT = [[162.4, -0.0262, 420], [178.0, -0.0075, 200], [188.7, 0.0148, 200], [208.0, 0.0320, 420]];
   var WID = [3.2, 2.6, 2.4, 1.8];
   function xs(i, y) { return FIT[i][0] + FIT[i][1] * (y - FIT[i][2]); }
@@ -652,16 +662,13 @@
   function hz(i, n) { return 440 * Math.pow(2, (MIDI0[i] + n - 69) / 12); }
   function noteName(i, n) { var m = MIDI0[i] + Math.round(n); return NAMES[((m % 12) + 12) % 12] + (Math.floor(m / 12) - 1); }
 
-  /* ---------- the live layer: vibrating strings, finger, bow ---------- */
   function mix(a, b, t) { return Math.round(a + (b - a) * t); }
   function drawBow() {
     g.save(); g.translate(XC + bowOff, YBOW); g.rotate(-0.025);
     var xl = -BOW_HALF, xr = BOW_HALF - 4;
     g.lineCap = 'round';
-    g.shadowColor = 'rgba(0,0,0,0.55)'; g.shadowBlur = 8; g.shadowOffsetY = 4;
     g.strokeStyle = 'rgba(244,234,208,0.93)'; g.lineWidth = 7;
     g.beginPath(); g.moveTo(xl + 40, 0); g.lineTo(xr - 8, 0); g.stroke();
-    g.shadowColor = 'transparent';
     g.strokeStyle = '#2f160b'; g.lineWidth = 4.6;
     g.beginPath(); g.moveTo(xl + 34, -13); g.quadraticCurveTo(0, -21, xr, -3); g.stroke();
     g.strokeStyle = 'rgba(214,150,80,0.6)'; g.lineWidth = 1.2;
@@ -671,13 +678,15 @@
     g.fillStyle = '#d6a24a'; g.fillRect(xl + 30, -21, 4, 23);
     g.restore();
   }
+  
+  /* Canvas draw optimized for Firefox (shadowBlur removed) */
   function draw() {
     var sc = G.sc, i, y;
     g.setTransform(G.dpr, 0, 0, G.dpr, 0, 0);
     g.clearRect(0, 0, G.W, G.H);
     g.save(); g.translate(G.ox, G.oy); g.scale(sc, sc);
 
-    if (hover && !state.some(function (s) { return s.owner !== null; })) { // preview under the pointer
+    if (hover && !state.some(function (s) { return s.owner !== null; })) {
       var hy = Math.min(Math.max(hover.y, YN), YB - 4);
       g.lineCap = 'round';
       g.strokeStyle = 'rgba(255,216,143,0.38)'; g.lineWidth = Math.max(WID[hover.i] * 1.7, 2.4 / sc);
@@ -689,7 +698,7 @@
     var gi = -1;
     for (i = 0; i < 4; i++) if (state[i].owner !== null && !demo) { gi = i; break; }
     if (gi < 0 && hover && !demo) gi = hover.i;
-    if (gi >= 0) {                       // fingerboard guide: semitone marks for the string in use
+    if (gi >= 0) {
       var NATURAL = { 0: 'C', 2: 'D', 4: 'E', 5: 'F', 7: 'G', 9: 'A', 11: 'B' };
       g.font = '600 ' + (11 / sc) + 'px "Instrument Serif", Georgia, serif'; g.textAlign = 'left'; g.textBaseline = 'middle';
       for (var q = 1; q <= 14; q++) {
@@ -715,7 +724,6 @@
       }
       if (s.a > 0.02) {
         g.lineWidth = w; g.strokeStyle = col;
-        g.shadowColor = 'rgba(255,200,110,' + s.a + ')'; g.shadowBlur = 14 * s.a * G.dpr;
         g.beginPath();
         for (y = yf; y <= ye + 7; y += 8) {
           var yy = Math.min(y, ye);
@@ -723,11 +731,11 @@
           d = Math.sin(Math.PI * v) * amp * Math.sin(s.phase) + 0.3 * Math.sin(2 * Math.PI * v) * amp * Math.sin(s.phase * 2 + 1);
           g.lineTo(xs(i, yy) + d, yy);
         }
-        g.stroke(); g.shadowBlur = 0;
+        g.stroke();
       }
     }
     drawBow();
-    for (i = 0; i < 4; i++) { // finger and note name
+    for (i = 0; i < 4; i++) {
       var t = state[i]; if (t.owner === null) continue;
       var fy = yAt(t.uf), fx = xs(i, fy), r = 11 / sc;
       var fgr = g.createRadialGradient(fx, fy, 1, fx, fy, r * 1.9);
@@ -756,7 +764,7 @@
       s.phase += dt * Math.PI * 2 * (9 + 5 * Math.log2(hz(i, s.n) / 196));
     });
     bowT += dt;
-    if (demo) { /* the bow is driven by the recording */ }
+    if (demo) { }
     else {
       var target = (act && !reduce) ? Math.sin(bowT * (1.4 + 1.6 * bowSpd)) * 40 : 0;
       bowOff += (target - bowOff) * Math.min(1, dt * 6);
@@ -769,7 +777,7 @@
   }
   function kick() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
 
-  /* ---------- sound: bowed string, body resonances, rosin noise, vibrato, hall ---------- */
+  /* Audio Synthesis Context */
   var ac, master, bodyIn, noiseBuf, wave, voices = [null, null, null, null];
   function audio() {
     if (ac) { if (ac.state === 'suspended') ac.resume(); return ac; }
@@ -778,8 +786,8 @@
     master = ac.createGain(); master.gain.value = 0.9;
     var comp = ac.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 3;
     master.connect(comp); comp.connect(ac.destination);
-    // concert-hall reverb whose tail gets darker as it fades
-    var len = Math.floor(sr * 2.8), ir = ac.createBuffer(2, len, sr);
+
+    var len = Math.floor(sr * 1.5), ir = ac.createBuffer(2, len, sr);
     for (var c = 0; c < 2; c++) {
       var d = ir.getChannelData(c), y = 0;
       for (var k = 0; k < len; k++) {
@@ -792,7 +800,7 @@
     var pre = ac.createDelay(0.1); pre.delayTime.value = 0.02;
     var wet = ac.createGain(); wet.gain.value = 0.34;
     master.connect(pre); pre.connect(conv); conv.connect(wet); wet.connect(comp);
-    // violin body: air and wood resonances, bridge hill
+
     bodyIn = ac.createGain();
     var node = bodyIn, hp = ac.createBiquadFilter();
     hp.type = 'highpass'; hp.frequency.value = 160; hp.Q.value = 0.7; node.connect(hp); node = hp;
@@ -804,7 +812,7 @@
     node.connect(lp); lp.connect(master);
     noiseBuf = ac.createBuffer(1, sr * 2, sr);
     var nd = noiseBuf.getChannelData(0); for (var q = 0; q < nd.length; q++) nd[q] = Math.random() * 2 - 1;
-    // a bowed string vibrates in a sawtooth-like (Helmholtz) motion
+
     var N = 64, re = new Float32Array(N), im = new Float32Array(N);
     for (var h = 1; h < N; h++) im[h] = 1 / Math.pow(h, 1.05);
     wave = ac.createPeriodicWave(re, im);
@@ -819,7 +827,7 @@
     v.vd.gain.setValueAtTime(v.vd.gain.value, t + delay);
     v.vd.gain.linearRampToValueAtTime(d, t + full);
   }
-  function pluck(i, n) {                // pizzicato: a short, decaying plucked tone
+  function pluck(i, n) {
     try {
       var a = audio(), t = a.currentTime, f = hz(i, n), lv = level(f) * 2.2;
       var o = a.createOscillator(), o2 = a.createOscillator(), gn = a.createGain(), lp = a.createBiquadFilter();
@@ -832,7 +840,7 @@
       o.start(t); o2.start(t); o.stop(t + 1.2); o2.stop(t + 1.2);
     } catch (e) { if (window.console) console.error(e); }
   }
-  function swell(i, mult) {             // louder when the player moves faster
+  function swell(i, mult) {
     var v = voices[i]; if (!v) return;
     var t = ac.currentTime, lv = level(hz(i, state[i].n)) * mult;
     v.out.gain.cancelScheduledValues(t);
@@ -843,7 +851,7 @@
       var a = audio(), t = a.currentTime, lv = level(freq);
       var out = a.createGain();
       out.gain.setValueAtTime(0.0001, t);
-      out.gain.exponentialRampToValueAtTime(lv * 1.35, t + 0.05);   // the bite of the bow
+      out.gain.exponentialRampToValueAtTime(lv * 1.35, t + 0.05);
       out.gain.exponentialRampToValueAtTime(lv, t + 0.22);
       var oscs = [-4, 4].map(function (cents) {
         var o = a.createOscillator(), gn = a.createGain();
@@ -881,7 +889,6 @@
     voices[i] = null;
   }
 
-  /* ---------- playing ---------- */
   var lastText = '';
   function show(i, n) {
     var c = Math.round((n - Math.round(n)) * 100);
@@ -889,7 +896,7 @@
     if (txt !== lastText) { readout.textContent = txt; lastText = txt; }
   }
   function begin(owner, i, n) {
-    if (owner && owner.indexOf('demo') === 0) return; // disable demo note playing
+    if (owner && owner.indexOf('demo') === 0) return;
     var s = state[i]; s.owner = owner; s.n = n; s.uf = uFromN(n);
     s.lv = 1; s.t0 = performance.now(); s.rev = []; s.dir = 0; s.lastN = n;
     keys[i].classList.add('on'); startVoice(i, hz(i, n)); show(i, n); kick();
@@ -897,9 +904,8 @@
   }
   function change(i, n) {
     var s = state[i], dn = Math.abs(n - s.n);
-    if (s.owner && s.owner.indexOf('demo') === 0) return; // disable demo note pitch change
+    if (s.owner && s.owner.indexOf('demo') === 0) return;
     s.n = n; s.uf = uFromN(n); setPitch(i, hz(i, n));
-    // wiggle detection: several quick direction changes within a small interval means vibrato
     var dir = n > s.lastN ? 1 : (n < s.lastN ? -1 : 0), now = performance.now();
     if (dir && s.dir && dir !== s.dir) { s.rev.push(now); s.rev = s.rev.filter(function (x) { return now - x < 700; }); }
     if (dir) { s.dir = dir; s.lastN = n; }
@@ -909,7 +915,7 @@
   }
   function finish(i, rel) {
     var s = state[i];
-    if (s.owner && s.owner.indexOf('demo') === 0) return; // disable demo note finish
+    if (s.owner && s.owner.indexOf('demo') === 0) return;
     var tap = s.owner && s.owner.charAt(0) === 'p' && performance.now() - s.t0 < 170 && !rel;
     s.owner = null; keys[i].classList.remove('on');
     if (tap) { stopVoice(i, 0.02); pluck(i, s.n); s.a = 1; }
@@ -918,21 +924,18 @@
     kick();
   }
   function pitchFromT(t, cssFromNut) {
-    if (cssFromNut < 9) return 0;                 // open string zone next to the nut
+    if (cssFromNut < 9) return 0;
     var n = -12 * Math.log2(1 - Math.min(t, MAXU));
     n = Math.min(n, MAXN);
-    // gentle magnetic assist: a small flat zone around each semitone, continuous in between
     var r = Math.round(n), d = n - r, Z = 0.2;
     if (Math.abs(d) < Z) return r;
     return r + Math.sign(d) * (Math.abs(d) - Z) / (0.5 - Z) * 0.5;
   }
-  // pointer -> photo coordinates, nearest string, note
   function hit(e, current) {
     var r = canvas.getBoundingClientRect();
     var ix = (e.clientX - r.left - G.ox) / G.sc, iy = (e.clientY - r.top - G.oy) / G.sc;
     var t = Math.min(Math.max((iy - YN) / (YB - YN), 0), 1), y = yAt(t), best = 0, bd = 1e9, i;
     for (i = 0; i < 4; i++) { var d = Math.abs(ix - xs(i, y)); if (d < bd) { bd = d; best = i; } }
-    // while dragging, stay on the current string until the pointer is clearly closer to another one
     if (current !== undefined && current !== best) {
       var dc = Math.abs(ix - xs(current, y)), gap = Math.abs(xs(best, y) - xs(current, y));
       if (dc - bd < 0.35 * gap) best = current;
@@ -957,7 +960,7 @@
       return;
     }
     var h = hit(e, i), nowT = performance.now(), st = state[i];
-    if (st.px !== undefined) {         // pointer speed sets the bow speed and the loudness
+    if (st.px !== undefined) {
       var sp = Math.hypot(e.clientX - st.px, e.clientY - st.py) / Math.max(8, nowT - st.pt) * 1000;
       st.sp = (st.sp || 0) * 0.6 + sp * 0.4;
       var mult = Math.min(1.7, 0.85 + st.sp / 900);
@@ -965,7 +968,7 @@
       if (Math.abs(mult - (st.mult || 1)) > 0.04) { st.mult = mult; swell(i, mult); }
     }
     st.px = e.clientX; st.py = e.clientY; st.pt = nowT;
-    if (h.i !== i && state[h.i].owner === null) {          // crossing to another string, like a bow
+    if (h.i !== i && state[h.i].owner === null) {
       finish(i, 0.12); active[e.pointerId] = h.i; begin('p' + e.pointerId, h.i, h.n);
     } else if (h.i === i && Math.abs(h.n - state[i].n) > 1e-3) change(i, h.n);
   });
@@ -992,7 +995,7 @@
     btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
   });
 
-  /* ---------- Play Vincent's Music: the recording drives the bow, strings and fingers ---------- */
+  /* Recording-driven Violin Animation */
   var TRACK = {"l":[0.01,0.02,0.03,0.04,0.05,0.03,0.05,0.03,0.05,0.03,0.04,0.03,0.04,0.02,0.01,0.02,0.05,0.05,0.03,0.05,0.04,0.05,0.05,0.05,0.09,0.13,0.13,0.14,0.11,0.05,0.03,0.07,0.13,0.12,0.12,0.09,0.09,0.08,0.13,0.24,0.19,0.17,0.09,0.14,0.22,0.12,0.07,0.08,0.11,0.09,0.14,0.09,0.07,0.06,0.05,0.05,0.05,0.05,0.05,0.03,0.03,0.04,0.07,0.07,0.06,0.05,0.03,0.03,0.05,0.04,0.04,0.04,0.03,0.04,0.07,0.08,0.06,0.04,0.04,0.04,0.04,0.03,0.03,0.03,0.02,0.06,0.1,0.07,0.06,0.05,0.04,0.03,0.03,0.02,0.05,0.06,0.04,0.04,0.04,0.04,0.03,0.02,0.01,0.02,0.03,0.03,0.03,0.05,0.08,0.07,0.05,0.06,0.07,0.07,0.08,0.06,0.07,0.1,0.1,0.12,0.14,0.16,0.18,0.23,0.24,0.23,0.19,0.13,0.1,0.11,0.13,0.1,0.06,0.06,0.04,0.13,0.11,0.1,0.06,0.07,0.07,0.07,0.07,0.05,0.08,0.09,0.07,0.08,0.11,0.09,0.11,0.11,0.1,0.15,0.1,0.1,0.12,0.11,0.12,0.17,0.21,0.21,0.13,0.1,0.11,0.19,0.18,0.21,0.18,0.18,0.18,0.19,0.18,0.12,0.11,0.08,0.09,0.1,0.1,0.07,0.07,0.05,0.09,0.15,0.1,0.08,0.08,0.07,0.14,0.16,0.12,0.09,0.08,0.07,0.09,0.18,0.14,0.14,0.1,0.13,0.18,0.14,0.15,0.16,0.16,0.18,0.2,0.22,0.24,0.15,0.13,0.21,0.32,0.24,0.2,0.19,0.19,0.24,0.26,0.24,0.31,0.25,0.18,0.2,0.26,0.19,0.18,0.16,0.2,0.26,0.3,0.3,0.33,0.43,0.38,0.53,0.39,0.48,0.29,0.16,0.1,0.12,0.13,0.14,0.14,0.17,0.13,0.16,0.18,0.16,0.16,0.14,0.12,0.16,0.17,0.18,0.18,0.16,0.19,0.22,0.24,0.31,0.36,0.35,0.42,0.47,0.6,0.56,0.51,0.44,0.26,0.19,0.27,0.25,0.17,0.25,0.21,0.22,0.22,0.17,0.17,0.2,0.18,0.19,0.18,0.23,0.18,0.2,0.15,0.1,0.09,0.12,0.08,0.1,0.11,0.12,0.14,0.13,0.1,0.08,0.11,0.16,0.14,0.09,0.1,0.08,0.13,0.15,0.16,0.13,0.16,0.17,0.19,0.16,0.13,0.17,0.18,0.13,0.13,0.1,0.08,0.1,0.14,0.12,0.12,0.11,0.09,0.08,0.11,0.1,0.12,0.12,0.11,0.13,0.19,0.2,0.13,0.1,0.06,0.1,0.11,0.1,0.12,0.1,0.08,0.08,0.11,0.09,0.09,0.07,0.05,0.08,0.12,0.1,0.12,0.1,0.1,0.15,0.17,0.14,0.12,0.09,0.1,0.11,0.13,0.15,0.13,0.15,0.29,0.32,0.27,0.17,0.13,0.17,0.22,0.23,0.23,0.19,0.37,0.41,0.4,0.46,0.25,0.16,0.17,0.22,0.24,0.23,0.19,0.19,0.29,0.32,0.24,0.3,0.33,0.31,0.49,0.5,0.51,0.62,0.89,0.48,0.41,0.92,0.67,0.22,0.12,0.13,0.14,0.13,0.17,0.17,0.14,0.17,0.17,0.18,0.21,0.17,0.2,0.24,0.22,0.25,0.26,0.24,0.33,0.44,0.32,0.45,0.69,1.0,1.0,0.69,0.64,1.0,1.0,1.0,0.94,1.0,0.78,0.47,0.33,0.5,0.67,0.69,0.99,0.75,0.64,0.66,0.51,0.38,0.41,0.62,0.8,0.6,0.45,0.34,0.26,0.22,0.27,0.26,0.26,0.26,0.25,0.26,0.28,0.26,0.25,0.25,0.29,0.41,0.39,0.32,0.33,0.46,0.5,0.52,0.66,0.55,0.5,0.52,0.53,0.52,0.48,0.53,0.45,0.52,0.73,0.91,1.0,1.0,0.8,0.59,0.57,0.4,0.56,0.48,0.46,0.5,0.53,1.0,1.0,1.0,1.0,0.87,0.67,0.68,0.5,0.44,0.38,0.41,0.58,0.98,1.0,0.63,0.63,0.8,0.68,0.85,0.65,0.83,0.67,0.71,0.77,0.92,0.75,0.7,0.66,0.64,0.77,0.72,0.57,0.58,0.89,1.0,1.0,0.91,0.94,1.0,0.78,0.76,0.88,0.82,0.75,0.78,0.69,0.53,0.63,0.65,0.47,0.38,0.33,0.37,0.4,0.35,0.41,0.34,0.2,0.39,0.35,0.3,0.39,0.44,0.44,0.41,0.4,0.38,0.38,0.46,0.41,0.41,0.33,0.33,0.31,0.28,0.31,0.26,0.21,0.24,0.24,0.21,0.21,0.19,0.19,0.19,0.14,0.12,0.12,0.1,0.12,0.11,0.11,0.12,0.11,0.13,0.22,0.23,0.2,0.17,0.17,0.24,0.36,0.54,0.98,1.0,1.0,1.0,0.74,0.94,0.87,0.65,0.44,0.37,0.35,0.37,0.66,0.72,0.46,0.62,0.48,0.49,0.38,0.37,0.4,0.72,0.69,0.55,0.47,0.65,0.47,0.55,0.56,0.52,0.55,0.61,0.69,0.69,0.64,0.64,0.55,0.5,0.55,0.42,0.53,0.5,0.46,0.58,0.47,0.56,0.6,0.57,0.57,0.53,0.69,0.63,0.67,0.77,0.92,0.97,1.0,0.81,0.74,0.52,0.62,0.63,0.6,0.5,0.5,0.62,0.87,0.81,0.89,0.64,0.96,1.0,1.0,0.94,1.0,1.0,1.0,1.0,1.0,1.0,0.85,0.98,0.8,0.65,0.75,0.68,0.77,0.62,0.49,0.62,0.6,0.51,0.51,0.52,0.5,0.54,0.47,0.54,0.47,0.4,0.52,0.48,0.43,0.46,0.42,0.38,0.4,0.42,0.41,0.52,0.49,0.68,0.57,0.72,0.97,0.93,1.0,1.0,1.0,0.98,0.92,1.0,1.0,1.0,1.0,1.0,0.82,0.56,0.5,0.55,0.64,0.58,0.53,0.6,0.74,0.76,1.0,1.0,0.51,0.48,0.46,0.62,0.66,0.55,0.58,0.76,0.73,0.58,0.6,0.63,0.62,0.73,0.69,0.65,0.51,0.52,0.74,0.63,0.86,0.67,0.65,0.55,0.37,0.27,0.21,0.13,0.11,0.1,0.1,0.11,0.12,0.13,0.22,0.23,0.24,0.2,0.23,0.21],"m":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,62,62,62,62,62,0,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,0,0,62,62,62,62,62,0,0,62,62,0,0,0,62,62,74,74,0,74,74,62,0,0,0,0,62,62,62,62,62,62,0,0,0,62,62,0,0,0,0,0,0,0,0,0,0,0,62,0,0,0,0,0,55,55,55,55,55,55,55,67,79,79,55,67,67,60,60,60,62,62,69,69,69,62,62,62,62,62,74,74,62,62,62,62,62,62,62,74,74,74,74,74,74,74,74,74,74,62,62,74,74,74,74,74,74,74,74,74,77,77,77,77,77,77,77,77,77,77,77,77,77,77,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,72,72,71,71,71,71,57,81,81,81,81,81,69,69,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,0,0,0,0,0,0,69,69,69,65,65,72,72,65,65,65,65,71,71,71,71,71,71,71,71,71,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,0,0,0,0,0,0,0,0,0,0,0,0,0,0,62,62,62,62,62,62,62,62,62,62,62,62,55,55,55,68,72,72,65,65,65,65,65,65,62,81,81,69,69,69,69,81,75,75,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,0,65,65,64,72,72,72,72,55,83,83,83,83,69,69,69,80,61,61,68,69,69,69,69,69,69,69,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,74,74,72,84,84,84,68,68,68,68,69,69,69,81,81,81,81,75,75,75,75,75,75,75,75,58,60,60,60,60,60,72,72,72,72,65,65,65,65,65,65,65,65,62,62,70,70,70,69,69,70,69,69,65,65,62,62,67,58,58,62,62,62,62,62,62,62,62,62,67,67,67,67,67,67,67,67,67,67,67,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,0,0,0,0,0,0,0,0,0,0,0,55,55,61,67,67,67,67,67,67,55,55,67,67,67,67,58,58,58,58,58,58,58,58,58,58,67,67,67,67,67,67,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,62,62,62,62,65,65,65,65,65,65,65,65,62,62,62,67,67,67,68,68,69,69,69,69,69,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,58,58,64,64,64,64,64,64,58,58,58,55,55,61,61,61,61,61,61,61,61,62,62,64,64,64,64,64,64,64,64,64,64,62,62,62,62,62,62,65,65,65,65,65,64,64,64,64,67,67,67,67,67,69,66,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62]};
   var demoStr = -1, bowDir = 1, quiet = 0;
   function pickString(m) {
@@ -1016,7 +1019,6 @@
       s.lv = 0.35 + 0.65 * Math.min(1, lv * 1.4);
       var txt = noteName(i, s.n); if (txt !== lastText) { readout.textContent = txt; lastText = txt; }
     } else if (demoStr >= 0) { demoRelease(); readout.textContent = ''; lastText = ''; }
-    // bow: speed follows loudness, direction changes in the silences
     if (lv < 0.06) { quiet += dt; if (quiet > 0.12 && Math.abs(bowOff) > 1) bowDir = bowOff > 0 ? -1 : 1; }
     else quiet = 0;
     if (!reduce) {
@@ -1059,7 +1061,6 @@
   audioEl.addEventListener('ended', function () { stopDemo(); audioEl.currentTime = 0; });
   audioEl.addEventListener('pause', function () { if (demo) stopDemo(); });
 
-  /* ---------- sizing ---------- */
   function placeControls() {
     var sc = G.sc, pl = G.ox + 60 * sc, pt = G.oy + (YN - 10) * sc;
     play.style.left = pl + 'px'; play.style.top = pt + 'px';
@@ -1073,7 +1074,7 @@
   }
   function resize() {
     layout();
-    if (G.W < 20 || G.H < 20) return;   // board is hidden (collapsed on phones)
+    if (G.W < 20 || G.H < 20) return;
     canvas.width = Math.round(G.W * G.dpr); canvas.height = Math.round(G.H * G.dpr);
     placeControls(); draw();
   }
