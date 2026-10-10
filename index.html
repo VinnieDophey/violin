@@ -233,10 +233,11 @@
     <div class="violin" id="violin">
       <button type="button" class="copy-btn violin-toggle" id="violin-toggle" aria-expanded="false" aria-controls="violin-body">Play on my violin</button>
       <div class="violin-body" id="violin-body">
-        <p class="hint">Hold a string to bow it. Slide up and down to change the note. Strings, left to right: G, D, A, E.</p>
+        <p class="hint">Hold a string to bow it and slide to change the note. Move faster for a louder tone, wiggle for vibrato, tap for pizzicato. Strings, left to right: G, D, A, E.</p>
         <div class="violin-top">
           <p class="readout" id="readout" role="status" aria-live="polite"></p>
-          <button type="button" class="copy-btn snap" id="snap" aria-pressed="true">Snap to notes: on</button>
+          <button type="button" class="copy-btn play-music" id="play-music">Play Vincent's Music</button>
+          <audio id="audio-sibelius" src="Sibelius.mp3" preload="metadata"></audio>
         </div>
         <div class="board" id="board">
           <img class="violin-img" id="violin-img" src="violin.webp" alt="Vincent's violin" width="424" height="1140" loading="lazy" decoding="async" draggable="false">
@@ -422,14 +423,16 @@
   var img = document.getElementById('violin-img');
   var g = canvas.getContext('2d');
   var keys = [].slice.call(play.querySelectorAll('.key'));
-  var readout = document.getElementById('readout'), snapBtn = document.getElementById('snap');
+  var readout = document.getElementById('readout');
+  var playMusicBtn = document.getElementById('play-music');
+  var audioEl = document.getElementById('audio-sibelius');
+  var isDemo = false;
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'];
   var MIDI0 = [55, 62, 69, 76];          // G3 D4 A4 E5
   var MAXN = 24, MAXU = 0.75;            // two octaves above the open string
-  var snap = true;
-  var state = MIDI0.map(function () { return { a: 0, phase: Math.random() * 6.28, owner: null, n: 0, uf: 0, kn: 0 }; });
-  var raf = null, last = 0, bowOff = 0, bowT = 0, hover = null;
+  var state = MIDI0.map(function () { return { a: 0, phase: Math.random() * 6.28, owner: null, n: 0, uf: 0, kn: 0, lv: 1 }; });
+  var raf = null, last = 0, bowOff = 0, bowT = 0, hover = null, bowSpd = 0, demo = false;
 
   /* ---------- the photo: all numbers are pixels of violin.webp (424 x 1140) ---------- */
   var IMG_W = 424, IMG_H = 1140;
@@ -485,6 +488,19 @@
       g.beginPath(); g.arc(xs(hover.i, hy), hy, 8 / sc, 0, 6.3); g.stroke();
     }
 
+    var gi = -1;
+    for (i = 0; i < 4; i++) if (state[i].owner !== null && !demo) { gi = i; break; }
+    if (gi < 0 && hover && !demo) gi = hover.i;
+    if (gi >= 0) {                       // fingerboard guide: semitone marks for the string in use
+      var NATURAL = { 0: 'C', 2: 'D', 4: 'E', 5: 'F', 7: 'G', 9: 'A', 11: 'B' };
+      g.font = '600 ' + (11 / sc) + 'px "Instrument Serif", Georgia, serif'; g.textAlign = 'left'; g.textBaseline = 'middle';
+      for (var q = 1; q <= 14; q++) {
+        var qy = yAt(uFromN(q)), qx = xs(gi, qy), mm = (MIDI0[gi] + q) % 12, nat = NATURAL[mm] !== undefined;
+        g.strokeStyle = nat ? 'rgba(255,227,166,0.5)' : 'rgba(255,227,166,0.2)'; g.lineWidth = 1 / sc;
+        g.beginPath(); g.moveTo(qx - 14 / sc, qy); g.lineTo(qx + 14 / sc, qy); g.stroke();
+        if (nat) { g.fillStyle = 'rgba(255,236,190,0.62)'; g.fillText(NATURAL[mm], xs(3, qy) + 20 / sc, qy); }
+      }
+    }
     for (i = 0; i < 4; i++) {
       var s = state[i], on = s.owner !== null;
       var yf = on ? yAt(s.uf) : YN, ye = YB;
@@ -532,18 +548,24 @@
   function frame(t) {
     var dt = Math.min(0.05, (t - last) / 1000 || 0.016), moving = false, act = false;
     last = t;
+    if (demo) demoUpdate(dt);
     state.forEach(function (s, i) {
       var on = s.owner !== null;
-      if (on) s.a += (1 - s.a) * Math.min(1, dt * 10); else s.a *= Math.pow(0.04, dt);
+      if (on) s.a += (s.lv - s.a) * Math.min(1, dt * 10); else s.a *= Math.pow(0.04, dt);
       if (!on && s.a < 0.004) s.a = 0;
       if (on || s.a > 0) moving = true;
       if (on) act = true;
       s.phase += dt * Math.PI * 2 * (9 + 5 * Math.log2(hz(i, s.n) / 196));
     });
     bowT += dt;
-    var target = (act && !reduce) ? Math.sin(bowT * 2.2) * 40 : 0;
-    bowOff += (target - bowOff) * Math.min(1, dt * 6);
+    if (demo) { /* the bow is driven by the recording */ }
+    else {
+      var target = (act && !reduce) ? Math.sin(bowT * (1.4 + 1.6 * bowSpd)) * 40 : 0;
+      bowOff += (target - bowOff) * Math.min(1, dt * 6);
+    }
+    bowSpd *= Math.pow(0.35, dt);
     if (Math.abs(bowOff) > 0.3) moving = true;
+    if (demo) moving = true;
     draw();
     raf = moving ? requestAnimationFrame(frame) : null;
   }
@@ -591,13 +613,32 @@
     return ac;
   }
   function level(f) { return 0.16 * Math.pow(196 / f, 0.22); }
-  function vibrato(i, delay, full) {
+  function vibrato(i, delay, full, depth) {
     var v = voices[i]; if (!v) return;
-    var t = ac.currentTime;
+    var t = ac.currentTime, d = depth || 14;
     v.vd.gain.cancelScheduledValues(t);
-    v.vd.gain.setValueAtTime(0, t);
-    v.vd.gain.setValueAtTime(0, t + delay);
-    v.vd.gain.linearRampToValueAtTime(14, t + full);
+    v.vd.gain.setValueAtTime(v.vd.gain.value, t);
+    v.vd.gain.setValueAtTime(v.vd.gain.value, t + delay);
+    v.vd.gain.linearRampToValueAtTime(d, t + full);
+  }
+  function pluck(i, n) {                // pizzicato: a short, decaying plucked tone
+    try {
+      var a = audio(), t = a.currentTime, f = hz(i, n), lv = level(f) * 2.2;
+      var o = a.createOscillator(), o2 = a.createOscillator(), gn = a.createGain(), lp = a.createBiquadFilter();
+      o.type = 'triangle'; o2.type = 'sawtooth'; o.frequency.value = f; o2.frequency.value = f; o2.detune.value = 3;
+      var g2 = a.createGain(); g2.gain.value = 0.25; o2.connect(g2); g2.connect(gn); o.connect(gn);
+      lp.type = 'lowpass'; lp.frequency.setValueAtTime(4200, t); lp.frequency.exponentialRampToValueAtTime(700, t + 0.35);
+      gn.gain.setValueAtTime(0.0001, t); gn.gain.exponentialRampToValueAtTime(lv, t + 0.004);
+      gn.gain.exponentialRampToValueAtTime(0.0001, t + 1.1);
+      gn.connect(lp); lp.connect(bodyIn);
+      o.start(t); o2.start(t); o.stop(t + 1.2); o2.stop(t + 1.2);
+    } catch (e) { if (window.console) console.error(e); }
+  }
+  function swell(i, mult) {             // louder when the player moves faster
+    var v = voices[i]; if (!v) return;
+    var t = ac.currentTime, lv = level(hz(i, state[i].n)) * mult;
+    v.out.gain.cancelScheduledValues(t);
+    v.out.gain.setTargetAtTime(Math.max(lv, 0.0001), t, 0.06);
   }
   function startVoice(i, freq) {
     try {
@@ -630,7 +671,7 @@
   function setPitch(i, freq) {
     var v = voices[i]; if (!v) return;
     var t = ac.currentTime;
-    v.oscs.forEach(function (o) { o.frequency.setTargetAtTime(freq, t, snap ? 0.025 : 0.012); });
+    v.oscs.forEach(function (o) { o.frequency.setTargetAtTime(freq, t, 0.014); });
   }
   function stopVoice(i, rel) {
     var v = voices[i]; if (!v) return;
@@ -645,22 +686,36 @@
   /* ---------- playing ---------- */
   var lastText = '';
   function show(i, n) {
-    var txt = noteName(i, n) + ', ' + Math.round(hz(i, n)) + ' Hz';
+    var c = Math.round((n - Math.round(n)) * 100);
+    var txt = noteName(i, n) + ', ' + Math.round(hz(i, n)) + ' Hz' + (Math.abs(c) >= 4 ? ' (' + (c > 0 ? '+' : '') + c + ' cents)' : '');
     if (txt !== lastText) { readout.textContent = txt; lastText = txt; }
   }
   function begin(owner, i, n) {
+    if (owner && owner.indexOf('demo') === 0) return; // disable demo note playing
     var s = state[i]; s.owner = owner; s.n = n; s.uf = uFromN(n);
+    s.lv = 1; s.t0 = performance.now(); s.rev = []; s.dir = 0; s.lastN = n;
     keys[i].classList.add('on'); startVoice(i, hz(i, n)); show(i, n); kick();
+    if (navigator.vibrate && owner && owner.charAt(0) === 'p') { try { navigator.vibrate(6); } catch (e) {} }
   }
   function change(i, n) {
     var s = state[i], dn = Math.abs(n - s.n);
+    if (s.owner && s.owner.indexOf('demo') === 0) return; // disable demo note pitch change
     s.n = n; s.uf = uFromN(n); setPitch(i, hz(i, n));
-    if (dn >= 0.6) vibrato(i, 0.4, 1.0);
+    // wiggle detection: several quick direction changes within a small interval means vibrato
+    var dir = n > s.lastN ? 1 : (n < s.lastN ? -1 : 0), now = performance.now();
+    if (dir && s.dir && dir !== s.dir) { s.rev.push(now); s.rev = s.rev.filter(function (x) { return now - x < 700; }); }
+    if (dir) { s.dir = dir; s.lastN = n; }
+    if (s.rev.length >= 3 && dn < 1.2) { vibrato(i, 0, 0.12, 24); s.wig = now; }
+    else if (dn >= 0.6 && !(s.wig && now - s.wig < 900)) vibrato(i, 0.4, 1.0);
     show(i, n); kick();
   }
   function finish(i, rel) {
-    var s = state[i]; s.owner = null; keys[i].classList.remove('on');
-    stopVoice(i, rel || 0.28);
+    var s = state[i];
+    if (s.owner && s.owner.indexOf('demo') === 0) return; // disable demo note finish
+    var tap = s.owner && s.owner.charAt(0) === 'p' && performance.now() - s.t0 < 170 && !rel;
+    s.owner = null; keys[i].classList.remove('on');
+    if (tap) { stopVoice(i, 0.02); pluck(i, s.n); s.a = 1; }
+    else stopVoice(i, rel || 0.28);
     if (!state.some(function (x) { return x.owner !== null; })) { readout.textContent = ''; lastText = ''; }
     kick();
   }
@@ -668,7 +723,10 @@
     if (cssFromNut < 9) return 0;                 // open string zone next to the nut
     var n = -12 * Math.log2(1 - Math.min(t, MAXU));
     n = Math.min(n, MAXN);
-    return snap ? Math.round(n) : n;
+    // gentle magnetic assist: a small flat zone around each semitone, continuous in between
+    var r = Math.round(n), d = n - r, Z = 0.2;
+    if (Math.abs(d) < Z) return r;
+    return r + Math.sign(d) * (Math.abs(d) - Z) / (0.5 - Z) * 0.5;
   }
   // pointer -> photo coordinates, nearest string, note
   function hit(e, current) {
@@ -685,9 +743,11 @@
   }
   var active = {};
   play.addEventListener('pointerdown', function (e) {
+    stopDemo();
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault();
     var h = hit(e); if (state[h.i].owner !== null) return;
+    state[h.i].px = undefined; state[h.i].sp = 0; state[h.i].mult = 1;
     try { play.setPointerCapture(e.pointerId); } catch (x) {}
     hover = null;
     active[e.pointerId] = h.i; begin('p' + e.pointerId, h.i, h.n);
@@ -698,7 +758,15 @@
       if (e.pointerType === 'mouse') { var hh = hit(e); hover = { i: hh.i, y: hh.iy }; kick(); }
       return;
     }
-    var h = hit(e, i);
+    var h = hit(e, i), nowT = performance.now(), st = state[i];
+    if (st.px !== undefined) {         // pointer speed sets the bow speed and the loudness
+      var sp = Math.hypot(e.clientX - st.px, e.clientY - st.py) / Math.max(8, nowT - st.pt) * 1000;
+      st.sp = (st.sp || 0) * 0.6 + sp * 0.4;
+      var mult = Math.min(1.7, 0.85 + st.sp / 900);
+      bowSpd = Math.min(1, st.sp / 900); st.lv = 0.75 + 0.25 * Math.min(1, st.sp / 900);
+      if (Math.abs(mult - (st.mult || 1)) > 0.04) { st.mult = mult; swell(i, mult); }
+    }
+    st.px = e.clientX; st.py = e.clientY; st.pt = nowT;
     if (h.i !== i && state[h.i].owner === null) {          // crossing to another string, like a bow
       finish(i, 0.12); active[e.pointerId] = h.i; begin('p' + e.pointerId, h.i, h.n);
     } else if (h.i === i && Math.abs(h.n - state[i].n) > 1e-3) change(i, h.n);
@@ -712,6 +780,7 @@
   });
   keys.forEach(function (btn, i) {
     btn.addEventListener('keydown', function (e) {
+      stopDemo();
       var s = state[i];
       if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); if (s.owner === null) begin('k' + i, i, s.kn); }
       else if (/^Arrow(Up|Right|Down|Left)$/.test(e.key)) {
@@ -724,11 +793,61 @@
     btn.addEventListener('blur', function () { if (state[i].owner === 'k' + i) finish(i); });
     btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
   });
-  snapBtn.addEventListener('click', function () {
-    snap = !snap;
-    snapBtn.textContent = 'Snap to notes: ' + (snap ? 'on' : 'off');
-    snapBtn.setAttribute('aria-pressed', snap ? 'true' : 'false');
+
+  /* ---------- Play Vincent's Music: the recording drives the bow, strings and fingers ---------- */
+  var TRACK = {"l":[0.01,0.02,0.03,0.04,0.05,0.03,0.05,0.03,0.05,0.03,0.04,0.03,0.04,0.02,0.01,0.02,0.05,0.05,0.03,0.05,0.04,0.05,0.05,0.05,0.09,0.13,0.13,0.14,0.11,0.05,0.03,0.07,0.13,0.12,0.12,0.09,0.09,0.08,0.13,0.24,0.19,0.17,0.09,0.14,0.22,0.12,0.07,0.08,0.11,0.09,0.14,0.09,0.07,0.06,0.05,0.05,0.05,0.05,0.05,0.03,0.03,0.04,0.07,0.07,0.06,0.05,0.03,0.03,0.05,0.04,0.04,0.04,0.03,0.04,0.07,0.08,0.06,0.04,0.04,0.04,0.04,0.03,0.03,0.03,0.02,0.06,0.1,0.07,0.06,0.05,0.04,0.03,0.03,0.02,0.05,0.06,0.04,0.04,0.04,0.04,0.03,0.02,0.01,0.02,0.03,0.03,0.03,0.05,0.08,0.07,0.05,0.06,0.07,0.07,0.08,0.06,0.07,0.1,0.1,0.12,0.14,0.16,0.18,0.23,0.24,0.23,0.19,0.13,0.1,0.11,0.13,0.1,0.06,0.06,0.04,0.13,0.11,0.1,0.06,0.07,0.07,0.07,0.07,0.05,0.08,0.09,0.07,0.08,0.11,0.09,0.11,0.11,0.1,0.15,0.1,0.1,0.12,0.11,0.12,0.17,0.21,0.21,0.13,0.1,0.11,0.19,0.18,0.21,0.18,0.18,0.18,0.19,0.18,0.12,0.11,0.08,0.09,0.1,0.1,0.07,0.07,0.05,0.09,0.15,0.1,0.08,0.08,0.07,0.14,0.16,0.12,0.09,0.08,0.07,0.09,0.18,0.14,0.14,0.1,0.13,0.18,0.14,0.15,0.16,0.16,0.18,0.2,0.22,0.24,0.15,0.13,0.21,0.32,0.24,0.2,0.19,0.19,0.24,0.26,0.24,0.31,0.25,0.18,0.2,0.26,0.19,0.18,0.16,0.2,0.26,0.3,0.3,0.33,0.43,0.38,0.53,0.39,0.48,0.29,0.16,0.1,0.12,0.13,0.14,0.14,0.17,0.13,0.16,0.18,0.16,0.16,0.14,0.12,0.16,0.17,0.18,0.18,0.16,0.19,0.22,0.24,0.31,0.36,0.35,0.42,0.47,0.6,0.56,0.51,0.44,0.26,0.19,0.27,0.25,0.17,0.25,0.21,0.22,0.22,0.17,0.17,0.2,0.18,0.19,0.18,0.23,0.18,0.2,0.15,0.1,0.09,0.12,0.08,0.1,0.11,0.12,0.14,0.13,0.1,0.08,0.11,0.16,0.14,0.09,0.1,0.08,0.13,0.15,0.16,0.13,0.16,0.17,0.19,0.16,0.13,0.17,0.18,0.13,0.13,0.1,0.08,0.1,0.14,0.12,0.12,0.11,0.09,0.08,0.11,0.1,0.12,0.12,0.11,0.13,0.19,0.2,0.13,0.1,0.06,0.1,0.11,0.1,0.12,0.1,0.08,0.08,0.11,0.09,0.09,0.07,0.05,0.08,0.12,0.1,0.12,0.1,0.1,0.15,0.17,0.14,0.12,0.09,0.1,0.11,0.13,0.15,0.13,0.15,0.29,0.32,0.27,0.17,0.13,0.17,0.22,0.23,0.23,0.19,0.37,0.41,0.4,0.46,0.25,0.16,0.17,0.22,0.24,0.23,0.19,0.19,0.29,0.32,0.24,0.3,0.33,0.31,0.49,0.5,0.51,0.62,0.89,0.48,0.41,0.92,0.67,0.22,0.12,0.13,0.14,0.13,0.17,0.17,0.14,0.17,0.17,0.18,0.21,0.17,0.2,0.24,0.22,0.25,0.26,0.24,0.33,0.44,0.32,0.45,0.69,1.0,1.0,0.69,0.64,1.0,1.0,1.0,0.94,1.0,0.78,0.47,0.33,0.5,0.67,0.69,0.99,0.75,0.64,0.66,0.51,0.38,0.41,0.62,0.8,0.6,0.45,0.34,0.26,0.22,0.27,0.26,0.26,0.26,0.25,0.26,0.28,0.26,0.25,0.25,0.29,0.41,0.39,0.32,0.33,0.46,0.5,0.52,0.66,0.55,0.5,0.52,0.53,0.52,0.48,0.53,0.45,0.52,0.73,0.91,1.0,1.0,0.8,0.59,0.57,0.4,0.56,0.48,0.46,0.5,0.53,1.0,1.0,1.0,1.0,0.87,0.67,0.68,0.5,0.44,0.38,0.41,0.58,0.98,1.0,0.63,0.63,0.8,0.68,0.85,0.65,0.83,0.67,0.71,0.77,0.92,0.75,0.7,0.66,0.64,0.77,0.72,0.57,0.58,0.89,1.0,1.0,0.91,0.94,1.0,0.78,0.76,0.88,0.82,0.75,0.78,0.69,0.53,0.63,0.65,0.47,0.38,0.33,0.37,0.4,0.35,0.41,0.34,0.2,0.39,0.35,0.3,0.39,0.44,0.44,0.41,0.4,0.38,0.38,0.46,0.41,0.41,0.33,0.33,0.31,0.28,0.31,0.26,0.21,0.24,0.24,0.21,0.21,0.19,0.19,0.19,0.14,0.12,0.12,0.1,0.12,0.11,0.11,0.12,0.11,0.13,0.22,0.23,0.2,0.17,0.17,0.24,0.36,0.54,0.98,1.0,1.0,1.0,0.74,0.94,0.87,0.65,0.44,0.37,0.35,0.37,0.66,0.72,0.46,0.62,0.48,0.49,0.38,0.37,0.4,0.72,0.69,0.55,0.47,0.65,0.47,0.55,0.56,0.52,0.55,0.61,0.69,0.69,0.64,0.64,0.55,0.5,0.55,0.42,0.53,0.5,0.46,0.58,0.47,0.56,0.6,0.57,0.57,0.53,0.69,0.63,0.67,0.77,0.92,0.97,1.0,0.81,0.74,0.52,0.62,0.63,0.6,0.5,0.5,0.62,0.87,0.81,0.89,0.64,0.96,1.0,1.0,0.94,1.0,1.0,1.0,1.0,1.0,1.0,0.85,0.98,0.8,0.65,0.75,0.68,0.77,0.62,0.49,0.62,0.6,0.51,0.51,0.52,0.5,0.54,0.47,0.54,0.47,0.4,0.52,0.48,0.43,0.46,0.42,0.38,0.4,0.42,0.41,0.52,0.49,0.68,0.57,0.72,0.97,0.93,1.0,1.0,1.0,0.98,0.92,1.0,1.0,1.0,1.0,1.0,0.82,0.56,0.5,0.55,0.64,0.58,0.53,0.6,0.74,0.76,1.0,1.0,0.51,0.48,0.46,0.62,0.66,0.55,0.58,0.76,0.73,0.58,0.6,0.63,0.62,0.73,0.69,0.65,0.51,0.52,0.74,0.63,0.86,0.67,0.65,0.55,0.37,0.27,0.21,0.13,0.11,0.1,0.1,0.11,0.12,0.13,0.22,0.23,0.24,0.2,0.23,0.21],"m":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,62,62,62,62,62,0,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,0,0,62,62,62,62,62,0,0,62,62,0,0,0,62,62,74,74,0,74,74,62,0,0,0,0,62,62,62,62,62,62,0,0,0,62,62,0,0,0,0,0,0,0,0,0,0,0,62,0,0,0,0,0,55,55,55,55,55,55,55,67,79,79,55,67,67,60,60,60,62,62,69,69,69,62,62,62,62,62,74,74,62,62,62,62,62,62,62,74,74,74,74,74,74,74,74,74,74,62,62,74,74,74,74,74,74,74,74,74,77,77,77,77,77,77,77,77,77,77,77,77,77,77,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,72,72,71,71,71,71,57,81,81,81,81,81,69,69,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,0,0,0,0,0,0,69,69,69,65,65,72,72,65,65,65,65,71,71,71,71,71,71,71,71,71,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,0,0,0,0,0,0,0,0,0,0,0,0,0,0,62,62,62,62,62,62,62,62,62,62,62,62,55,55,55,68,72,72,65,65,65,65,65,65,62,81,81,69,69,69,69,81,75,75,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,81,0,65,65,64,72,72,72,72,55,83,83,83,83,69,69,69,80,61,61,68,69,69,69,69,69,69,69,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,74,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,69,74,74,72,84,84,84,68,68,68,68,69,69,69,81,81,81,81,75,75,75,75,75,75,75,75,58,60,60,60,60,60,72,72,72,72,65,65,65,65,65,65,65,65,62,62,70,70,70,69,69,70,69,69,65,65,62,62,67,58,58,62,62,62,62,62,62,62,62,62,67,67,67,67,67,67,67,67,67,67,67,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,75,0,0,0,0,0,0,0,0,0,0,0,55,55,61,67,67,67,67,67,67,55,55,67,67,67,67,58,58,58,58,58,58,58,58,58,58,67,67,67,67,67,67,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,61,62,62,62,62,65,65,65,65,65,65,65,65,62,62,62,67,67,67,68,68,69,69,69,69,69,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,70,58,58,64,64,64,64,64,64,58,58,58,55,55,61,61,61,61,61,61,61,61,62,62,64,64,64,64,64,64,64,64,64,64,62,62,62,62,62,62,65,65,65,65,65,64,64,64,64,67,67,67,67,67,69,66,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62,62]};
+  var demoStr = -1, bowDir = 1, quiet = 0;
+  function pickString(m) {
+    if (demoStr >= 0) { var n0 = m - MIDI0[demoStr]; if (n0 >= 0 && n0 <= 13) return demoStr; }
+    var b = 0, i; for (i = 0; i < 4; i++) if (m >= MIDI0[i] - 0.5) b = i;
+    return b;
+  }
+  function demoRelease() {
+    state.forEach(function (s, i) { if (s.owner === 'demo') { s.owner = null; keys[i].classList.remove('on'); } });
+    demoStr = -1;
+  }
+  function demoUpdate(dt) {
+    if (audioEl.paused) return;
+    var k = Math.min(TRACK.l.length - 1, Math.floor(audioEl.currentTime * 10));
+    var lv = TRACK.l[k], m = TRACK.m[k];
+    if (m) {
+      var i = pickString(m), n = Math.min(MAXN, Math.max(0, m - MIDI0[i]));
+      if (i !== demoStr) { demoRelease(); demoStr = i; state[i].n = n; state[i].uf = uFromN(n); }
+      var s = state[i]; s.owner = 'demo'; keys[i].classList.add('on');
+      s.n += (n - s.n) * Math.min(1, dt * 18); s.uf = uFromN(s.n);
+      s.lv = 0.35 + 0.65 * Math.min(1, lv * 1.4);
+      var txt = noteName(i, s.n); if (txt !== lastText) { readout.textContent = txt; lastText = txt; }
+    } else if (demoStr >= 0) { demoRelease(); readout.textContent = ''; lastText = ''; }
+    // bow: speed follows loudness, direction changes in the silences
+    if (lv < 0.06) { quiet += dt; if (quiet > 0.12 && Math.abs(bowOff) > 1) bowDir = bowOff > 0 ? -1 : 1; }
+    else quiet = 0;
+    if (!reduce) {
+      var sp = 14 + 150 * Math.min(1, lv * 1.6);
+      bowOff += bowDir * sp * dt * (m ? 1 : 0.35);
+      if (bowOff > 56) { bowOff = 56; bowDir = -1; } else if (bowOff < -56) { bowOff = -56; bowDir = 1; }
+    }
+  }
+  function setPlayLabel(on) { playMusicBtn.textContent = on ? "Pause Vincent's Music" : "Play Vincent's Music"; }
+  function startDemo() {
+    state.forEach(function (s, i) { if (s.owner !== null && s.owner !== 'demo') finish(i); });
+    demo = true; isDemo = true; quiet = 0; kick();
+  }
+  function stopDemo() {
+    if (!demo) return;
+    demo = false; isDemo = false;
+    if (!audioEl.paused) audioEl.pause();
+    demoRelease(); setPlayLabel(false);
+    readout.textContent = ''; lastText = '';
+    kick();
+  }
+  playMusicBtn.addEventListener('click', function () {
+    if (demo) { stopDemo(); return; }
+    startDemo(); setPlayLabel(true);
+    var pr = audioEl.play();
+    if (pr && pr.catch) pr.catch(function () { stopDemo(); readout.textContent = 'The recording could not be played.'; lastText = ''; });
   });
+  audioEl.addEventListener('ended', function () { stopDemo(); audioEl.currentTime = 0; });
+  audioEl.addEventListener('pause', function () { if (demo) stopDemo(); });
 
   /* ---------- sizing ---------- */
   function placeControls() {
@@ -753,7 +872,7 @@
     var open = vio.classList.toggle('open');
     tg.setAttribute('aria-expanded', open ? 'true' : 'false');
     tg.textContent = open ? 'Hide my violin' : 'Play on my violin';
-    if (!open) state.forEach(function (s, i) { if (s.owner !== null) finish(i); });
+    if (!open) { stopDemo(); state.forEach(function (s, i) { if (s.owner !== null) finish(i); }); }
   });
   document.querySelectorAll('.hero-links a[href="#about"]').forEach(function (a) {
     a.addEventListener('click', function () { if (window.matchMedia('(max-width: 800px)').matches && !vio.classList.contains('open')) tg.click(); });
