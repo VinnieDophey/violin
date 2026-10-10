@@ -102,11 +102,8 @@
   }
   .hero-photo::after { content: ""; position: absolute; inset: 0; border-radius: 10px 10px 0 0; box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.28); pointer-events: none; }
   .violin .hint { margin: 0 0 0.7rem; font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--gold); }
-  [hidden] { display: none !important; }
-  .violin-top { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 0.8rem; }
-  .readout { margin: 0; min-height: 2.1rem; font-family: var(--serif); font-size: 1.9rem; line-height: 1.1; color: #fbf0d4; }
-  .violin-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; }
-  .violin-actions .copy-btn { padding: 0.5rem 0.9rem; font-size: 0.95rem; }
+  .violin-top { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.8rem; min-height: 2.6rem; }
+  .readout { margin: 0; font-family: var(--serif); font-size: 1.9rem; line-height: 1.1; color: #fbf0d4; }
   .violin-toggle { display: none; }
 
   /* Sections */
@@ -239,12 +236,8 @@
         <p class="hint">Hold a string to bow it. Slide up and down to change the note. Strings, left to right: G, D, A, E.</p>
         <div class="violin-top">
           <p class="readout" id="readout" role="status" aria-live="polite"></p>
-          <div class="violin-actions">
-            <button type="button" class="copy-btn snap" id="snap" aria-pressed="true">Snap to notes: on</button>
-            <button type="button" class="copy-btn" id="rec-btn" hidden>Play my recording</button>
-          </div>
+          <button type="button" class="copy-btn snap" id="snap" aria-pressed="true">Snap to notes: on</button>
         </div>
-        <audio id="rec" src="recording.mp3" preload="metadata"></audio>
         <div class="board" id="board">
           <img class="violin-img" id="violin-img" src="violin.webp" alt="Vincent's violin" width="424" height="1140" loading="lazy" decoding="async" draggable="false">
           <canvas id="strings" aria-hidden="true"></canvas>
@@ -435,7 +428,7 @@
   var MIDI0 = [55, 62, 69, 76];          // G3 D4 A4 E5
   var MAXN = 24, MAXU = 0.75;            // two octaves above the open string
   var snap = true;
-  var state = MIDI0.map(function () { return { a: 0, phase: Math.random() * 6.28, owner: null, n: 0, uf: 0, kn: 0, ut: 0, tgt: 1 }; });
+  var state = MIDI0.map(function () { return { a: 0, phase: Math.random() * 6.28, owner: null, n: 0, uf: 0, kn: 0 }; });
   var raf = null, last = 0, bowOff = 0, bowT = 0, hover = null;
 
   /* ---------- the photo: all numbers are pixels of violin.webp (424 x 1140) ---------- */
@@ -539,22 +532,17 @@
   function frame(t) {
     var dt = Math.min(0.05, (t - last) / 1000 || 0.016), moving = false, act = false;
     last = t;
-    if (recOn) analyseStep(dt);
     state.forEach(function (s, i) {
       var on = s.owner !== null;
-      if (on) s.a += ((s.owner === 'a' ? s.tgt : 1) - s.a) * Math.min(1, dt * 10); else s.a *= Math.pow(0.04, dt);
-      if (s.owner === 'a') s.uf += (s.ut - s.uf) * Math.min(1, dt * 22);
+      if (on) s.a += (1 - s.a) * Math.min(1, dt * 10); else s.a *= Math.pow(0.04, dt);
       if (!on && s.a < 0.004) s.a = 0;
       if (on || s.a > 0) moving = true;
       if (on) act = true;
       s.phase += dt * Math.PI * 2 * (9 + 5 * Math.log2(hz(i, s.n) / 196));
     });
     bowT += dt;
-    if (recOn) { moveBow(dt); moving = true; }
-    else {
-      var target = (act && !reduce) ? Math.sin(bowT * 2.2) * 40 : 0;
-      bowOff += (target - bowOff) * Math.min(1, dt * 6);
-    }
+    var target = (act && !reduce) ? Math.sin(bowT * 2.2) * 40 : 0;
+    bowOff += (target - bowOff) * Math.min(1, dt * 6);
     if (Math.abs(bowOff) > 0.3) moving = true;
     draw();
     raf = moving ? requestAnimationFrame(frame) : null;
@@ -661,7 +649,6 @@
     if (txt !== lastText) { readout.textContent = txt; lastText = txt; }
   }
   function begin(owner, i, n) {
-    if (recOn) stopRec(false);                    // playing the violin yourself pauses the recording
     var s = state[i]; s.owner = owner; s.n = n; s.uf = uFromN(n);
     keys[i].classList.add('on'); startVoice(i, hz(i, n)); show(i, n); kick();
   }
@@ -766,7 +753,7 @@
     var open = vio.classList.toggle('open');
     tg.setAttribute('aria-expanded', open ? 'true' : 'false');
     tg.textContent = open ? 'Hide my violin' : 'Play on my violin';
-    if (!open) { if (recOn) stopRec(false); state.forEach(function (s, i) { if (s.owner !== null) finish(i); }); }
+    if (!open) state.forEach(function (s, i) { if (s.owner !== null) finish(i); });
   });
   document.querySelectorAll('.hero-links a[href="#about"]').forEach(function (a) {
     a.addEventListener('click', function () { if (window.matchMedia('(max-width: 800px)').matches && !vio.classList.contains('open')) tg.click(); });
