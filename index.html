@@ -677,6 +677,8 @@
   var MAXN = 24, MAXU = 0.75;
   var state = MIDI0.map(function () { return { a: 0, phase: Math.random() * 6.28, owner: null, n: 0, uf: 0, kn: 0, lv: 1 }; });
   var raf = null, last = 0, bowOff = 0, bowT = 0, hover = null, bowSpd = 0, demo = false;
+  /* A string is "user-owned" when the visitor (pointer/keyboard) is playing it, as opposed to the recording animation ('demo'). */
+  function userOwned(s) { return s.owner !== null && String(s.owner).indexOf('demo') !== 0; }
 
   var IMG_W = 424, IMG_H = 1140;
   var YN = 171, YB = 756;
@@ -720,7 +722,7 @@
     g.clearRect(0, 0, G.W, G.H);
     g.save(); g.translate(G.ox, G.oy); g.scale(sc, sc);
 
-    if (hover && !state.some(function (s) { return s.owner !== null; })) {
+    if (hover && !state.some(userOwned)) {
       var hy = Math.min(Math.max(hover.y, YN), YB - 4);
       g.lineCap = 'round';
       g.strokeStyle = 'rgba(255,216,143,0.38)'; g.lineWidth = Math.max(WID[hover.i] * 1.7, 2.4 / sc);
@@ -730,8 +732,8 @@
     }
 
     var gi = -1;
-    for (i = 0; i < 4; i++) if (state[i].owner !== null && !demo) { gi = i; break; }
-    if (gi < 0 && hover && !demo) gi = hover.i;
+    for (i = 0; i < 4; i++) if (userOwned(state[i])) { gi = i; break; }
+    if (gi < 0 && hover) gi = hover.i;
     if (gi >= 0) {
       var NATURAL = { 0: 'C', 2: 'D', 4: 'E', 5: 'F', 7: 'G', 9: 'A', 11: 'B' };
       g.font = '600 ' + (11 / sc) + 'px "Instrument Serif", Georgia, serif'; g.textAlign = 'left'; g.textBaseline = 'middle';
@@ -951,10 +953,10 @@
     var s = state[i];
     if (s.owner && s.owner.indexOf('demo') === 0) return;
     var tap = s.owner && s.owner.charAt(0) === 'p' && performance.now() - s.t0 < 170 && !rel;
-    s.owner = null; keys[i].classList.remove('on');
+    s.owner = null; if (!demo) keys[i].classList.remove('on');
     if (tap) { stopVoice(i, 0.02); pluck(i, s.n); s.a = 1; }
     else stopVoice(i, rel || 0.28);
-    if (!state.some(function (x) { return x.owner !== null; })) { readout.textContent = ''; lastText = ''; }
+    if (!state.some(userOwned) && !demo) { readout.textContent = ''; lastText = ''; }
     kick();
   }
   function pitchFromT(t, cssFromNut) {
@@ -978,10 +980,9 @@
   }
   var active = {};
   play.addEventListener('pointerdown', function (e) {
-    stopDemo();
     if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault();
-    var h = hit(e); if (state[h.i].owner !== null) return;
+    var h = hit(e); if (userOwned(state[h.i])) return;
     state[h.i].px = undefined; state[h.i].sp = 0; state[h.i].mult = 1;
     try { play.setPointerCapture(e.pointerId); } catch (x) {}
     hover = null;
@@ -1002,7 +1003,7 @@
       if (Math.abs(mult - (st.mult || 1)) > 0.04) { st.mult = mult; swell(i, mult); }
     }
     st.px = e.clientX; st.py = e.clientY; st.pt = nowT;
-    if (h.i !== i && state[h.i].owner === null) {
+    if (h.i !== i && !userOwned(state[h.i])) {
       finish(i, 0.12); active[e.pointerId] = h.i; begin('p' + e.pointerId, h.i, h.n);
     } else if (h.i === i && Math.abs(h.n - state[i].n) > 1e-3) change(i, h.n);
   });
@@ -1015,9 +1016,8 @@
   });
   keys.forEach(function (btn, i) {
     btn.addEventListener('keydown', function (e) {
-      stopDemo();
       var s = state[i];
-      if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); if (s.owner === null) begin('k' + i, i, s.kn); }
+      if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) { e.preventDefault(); if (!userOwned(s)) begin('k' + i, i, s.kn); }
       else if (/^Arrow(Up|Right|Down|Left)$/.test(e.key)) {
         e.preventDefault();
         s.kn = Math.max(0, Math.min(MAXN, s.kn + ((e.key === 'ArrowUp' || e.key === 'ArrowRight') ? 1 : -1)));
@@ -1047,12 +1047,17 @@
     var lv = TRACK.l[k], m = TRACK.m[k];
     if (m) {
       var i = pickString(m), n = Math.min(MAXN, Math.max(0, m - MIDI0[i]));
-      if (i !== demoStr) { demoRelease(); demoStr = i; state[i].n = n; state[i].uf = uFromN(n); }
-      var s = state[i]; s.owner = 'demo'; keys[i].classList.add('on');
-      s.n += (n - s.n) * Math.min(1, dt * 18); s.uf = uFromN(s.n);
-      s.lv = 0.35 + 0.65 * Math.min(1, lv * 1.4);
-      var txt = noteName(i, s.n); if (txt !== lastText) { readout.textContent = txt; lastText = txt; }
-    } else if (demoStr >= 0) { demoRelease(); readout.textContent = ''; lastText = ''; }
+      if (userOwned(state[i])) {
+        /* The visitor is playing this string: their note takes priority over the recording's animation */
+        if (demoStr >= 0) demoRelease();
+      } else {
+        if (i !== demoStr) { demoRelease(); demoStr = i; state[i].n = n; state[i].uf = uFromN(n); }
+        var s = state[i]; s.owner = 'demo'; keys[i].classList.add('on');
+        s.n += (n - s.n) * Math.min(1, dt * 18); s.uf = uFromN(s.n);
+        s.lv = 0.35 + 0.65 * Math.min(1, lv * 1.4);
+        if (!state.some(userOwned)) { var txt = noteName(i, s.n); if (txt !== lastText) { readout.textContent = txt; lastText = txt; } }
+      }
+    } else if (demoStr >= 0) { demoRelease(); if (!state.some(userOwned)) { readout.textContent = ''; lastText = ''; } }
     if (lv < 0.06) { quiet += dt; if (quiet > 0.12 && Math.abs(bowOff) > 1) bowDir = bowOff > 0 ? -1 : 1; }
     else quiet = 0;
     if (!reduce) {
@@ -1063,7 +1068,6 @@
   }
   function setPlayLabel(on) { playMusicBtn.textContent = on ? "Pause Vincent's Music" : "Play Vincent's Music"; }
   function startDemo() {
-    state.forEach(function (s, i) { if (s.owner !== null && s.owner !== 'demo') finish(i); });
     demo = true; isDemo = true; quiet = 0; kick();
   }
   function stopDemo() {
