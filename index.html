@@ -274,7 +274,7 @@
   <div class="hero-text">
     <h1>Vincent<br>Pham</h1>
     <p class="tag">Violinist. Soloist, concertmaster and chamber musician from Ottawa.</p>
-    <a href="#violin" class="copy-btn">Play on Vincent's Violin</a>
+    <a href="#violin" class="copy-btn" id="hero-play-btn">Play on Vincent's Violin</a>
   </div>
 </header>
 
@@ -903,12 +903,24 @@
     readout.textContent = ''; lastText = '';
     kick();
   }
-  playMusicBtn.addEventListener('click', function () {
-    if (demo) { stopDemo(); return; }
+  function triggerPlayMusic() {
+    if (demo) return;
     startDemo(); setPlayLabel(true);
     var pr = audioEl.play();
     if (pr && pr.catch) pr.catch(function () { stopDemo(); readout.textContent = 'The recording could not be played.'; lastText = ''; });
+  }
+
+  playMusicBtn.addEventListener('click', function () {
+    if (demo) { stopDemo(); return; }
+    triggerPlayMusic();
   });
+
+  document.getElementById('hero-play-btn').addEventListener('click', function (e) {
+    e.preventDefault();
+    document.getElementById('violin').scrollIntoView({ behavior: 'smooth' });
+    triggerPlayMusic();
+  });
+
   audioEl.addEventListener('ended', function () { stopDemo(); audioEl.currentTime = 0; });
   audioEl.addEventListener('pause', function () { if (demo) stopDemo(); });
 
