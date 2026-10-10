@@ -52,10 +52,10 @@
   .hero {
     position: relative;
     min-height: 100vh; min-height: 100svh;
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(300px, 460px);
-    gap: clamp(2rem, 5vw, 5rem);
-    align-items: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
     padding: 6.5rem clamp(1.25rem, 5vw, 4rem) 4rem;
     overflow: hidden;
   }
@@ -84,7 +84,7 @@
   .hero-text {
     position: relative;
     z-index: 2;
-    max-width: 48ch;
+    max-width: 54ch;
   }
   .hero h1 {
     font-family: var(--serif); font-weight: 400;
@@ -93,12 +93,17 @@
     color: #fbf0d4;
     text-shadow: 0 10px 30px rgba(0,0,0,0.6);
   }
-  .hero .tag { margin: 0; max-width: 32ch; font-size: 1.25rem; color: #ecd9b0; }
+  .hero .tag { margin: 0 0 2rem; max-width: 36ch; font-size: 1.25rem; color: #ecd9b0; }
 
-  /* Hero Violin Container on Right Handside (borderless) */
-  .hero-violin-col {
-    position: relative;
-    z-index: 2;
+  /* Hero Violin Container (now moved down into main sections) */
+  .violin-section {
+    padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 5vw, 4rem);
+    border-top: 1px solid var(--rule);
+    background: var(--ebony-2);
+  }
+  .violin-container {
+    max-width: 600px;
+    margin: 0 auto;
     display: flex;
     flex-direction: column;
     gap: 1rem;
@@ -163,6 +168,7 @@
     padding: clamp(3.5rem, 8vw, 6.5rem) clamp(1.25rem, 5vw, 4rem);
     border-top: 1px solid var(--rule);
   }
+  main section:nth-of-type(odd) { background: var(--ebony); }
   main section:nth-of-type(even) { background: var(--ebony-2); }
   main h2 {
     font-family: var(--serif); font-weight: 400; font-size: 2.2rem; line-height: 1.05;
@@ -233,8 +239,8 @@
   footer { padding: 2rem clamp(1.25rem, 5vw, 4rem) 3rem; border-top: 1px solid var(--rule); color: var(--muted); font-size: 0.9rem; }
 
   @media (max-width: 900px) {
-    .hero { grid-template-columns: 1fr; min-height: auto; padding-top: 8.5rem; padding-bottom: 5rem; gap: 3.5rem; }
-    .hero-violin-col { max-width: 420px; margin: 3.5rem auto 0; width: 100%; }
+    .hero { min-height: auto; padding-top: 8.5rem; padding-bottom: 5rem; }
+    .violin-container { max-width: 420px; width: 100%; }
     .board { height: 60vh; min-height: 400px; max-height: 520px; }
     main section { grid-template-columns: 1fr; gap: 1.25rem; }
     main h2 { position: static; }
@@ -268,26 +274,7 @@
   <div class="hero-text">
     <h1>Vincent<br>Pham</h1>
     <p class="tag">Violinist. Soloist, concertmaster and chamber musician from Ottawa.</p>
-  </div>
-
-  <!-- Interactive Violin Widget on the Right Handside of Hero (Borderless, with extra mobile top spacing) -->
-  <div class="hero-violin-col violin" id="violin">
-    <div class="hero-violin-top">
-      <button type="button" class="copy-btn play-music" id="play-music">Play Vincent's Music</button>
-      <p class="readout" id="readout" role="status" aria-live="polite"></p>
-      <audio id="audio-sibelius" src="Sibelius.mp3" preload="metadata"></audio>
-    </div>
-    <p class="hint">Hold a string to bow it and slide to change the note. Move faster for a louder tone, wiggle for vibrato, tap for pizzicato. Strings, left to right: G, D, A, E.</p>
-    <div class="board" id="board">
-      <img class="violin-img" id="violin-img" src="violin.webp" alt="Vincent's violin" width="424" height="1140" loading="lazy" decoding="async" draggable="false">
-      <canvas id="strings" aria-hidden="true"></canvas>
-      <div class="play" id="play" role="group" aria-label="Violin strings, left to right: G, D, A, E. Press and hold to bow. Drag up and down to change the note. With the keyboard, hold Enter on a string and use the arrow keys to change the note.">
-        <button class="key" aria-label="G string"><span>G</span></button>
-        <button class="key" aria-label="D string"><span>D</span></button>
-        <button class="key" aria-label="A string"><span>A</span></button>
-        <button class="key" aria-label="E string"><span>E</span></button>
-      </div>
-    </div>
+    <a href="#violin" class="copy-btn">Play on Vincent's Violin</a>
   </div>
 </header>
 
@@ -305,6 +292,28 @@
       </figure>
     </div>
   </section>
+
+  <!-- Interactive Violin Section (Placed right after About) -->
+  <div class="violin-section violin" id="violin">
+    <div class="violin-container">
+      <div class="hero-violin-top">
+        <button type="button" class="copy-btn play-music" id="play-music">Play Vincent's Music</button>
+        <p class="readout" id="readout" role="status" aria-live="polite"></p>
+        <audio id="audio-sibelius" src="Sibelius.mp3" preload="metadata"></audio>
+      </div>
+      <p class="hint">Hold a string to bow it and slide to change the note. Move faster for a louder tone, wiggle for vibrato, tap for pizzicato. Strings, left to right: G, D, A, E.</p>
+      <div class="board" id="board">
+        <img class="violin-img" id="violin-img" src="violin.webp" alt="Vincent's violin" width="424" height="1140" loading="lazy" decoding="async" draggable="false">
+        <canvas id="strings" aria-hidden="true"></canvas>
+        <div class="play" id="play" role="group" aria-label="Violin strings, left to right: G, D, A, E. Press and hold to bow. Drag up and down to change the note. With the keyboard, hold Enter on a string and use the arrow keys to change the note.">
+          <button class="key" aria-label="G string"><span>G</span></button>
+          <button class="key" aria-label="D string"><span>D</span></button>
+          <button class="key" aria-label="A string"><span>A</span></button>
+          <button class="key" aria-label="E string"><span>E</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <section id="training">
     <h2>Training</h2>
