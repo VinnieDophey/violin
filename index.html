@@ -180,7 +180,30 @@
     border-top: 1px solid var(--rule);
     background: var(--ebony-2);
   }
+  /* Sheet music (Sibelius, Violin Concerto, mvt. I, violin + piano) floating faintly behind the violin while the recording plays */
+  .violin-section { position: relative; overflow: hidden; }
+  .score-bg {
+    position: absolute; left: 50%; top: 50%; z-index: 0; pointer-events: none;
+    width: min(1240px, calc(100% - 1.5rem)); aspect-ratio: 1821 / 491; transform: translate(-50%, -50%);
+    opacity: 0; transition: opacity 1.2s ease;
+  }
+  .score-bg.on { opacity: 1; }
+  .score-sys { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.7s ease; user-select: none; }
+  .score-sys.on { opacity: 0.30; }
+  .score-bar {
+    position: absolute; top: 2%; bottom: 2%; border-radius: 4px; opacity: 0;
+    background: linear-gradient(180deg, rgba(227,169,77,0), rgba(227,169,77,0.10) 20%, rgba(227,169,77,0.10) 80%, rgba(227,169,77,0));
+    transition: left 0.35s ease, width 0.35s ease, opacity 0.4s ease;
+  }
+  .score-head {
+    position: absolute; top: 4%; bottom: 4%; width: 2px; margin-left: -1px; opacity: 0;
+    background: linear-gradient(180deg, rgba(255,216,143,0), rgba(255,216,143,0.55) 15%, rgba(255,216,143,0.55) 85%, rgba(255,216,143,0));
+    box-shadow: 0 0 14px rgba(227,169,77,0.5); transition: opacity 0.4s ease;
+  }
+  .score-bar.on, .score-head.on { opacity: 1; }
+  @media (prefers-reduced-motion: reduce) { .score-bg, .score-sys, .score-bar, .score-head { transition: none; } }
   .violin-container {
+    position: relative; z-index: 1;
     max-width: 600px;
     margin: 0 auto;
     display: flex;
@@ -220,11 +243,17 @@
     position: relative;
     width: 100%;
     height: min(65vh, 520px);
-    background: radial-gradient(85% 60% at 50% 38%, #3a190c 0%, #1a0d07 62%, #0d0603 100%);
     border-radius: 8px;
     box-shadow: inset 0 0 0 1px rgba(255, 220, 160, 0.10), 0 20px 40px rgba(0, 0, 0, 0.45);
     overflow: hidden;
   }
+  /* The board's dark backdrop sits on its own layer so it can turn translucent and let the sheet music show through behind the violin */
+  .board::before {
+    content: ""; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(85% 60% at 50% 38%, #3a190c 0%, #1a0d07 62%, #0d0603 100%);
+    transition: opacity 1.2s ease;
+  }
+  .violin-section.score-on .board::before { opacity: 0.42; }
   .violin-img { position: absolute; max-width: none; pointer-events: none; -webkit-user-select: none; user-select: none; filter: drop-shadow(0 18px 22px rgba(0, 0, 0, 0.6)); }
   .board canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; pointer-events: none; }
   .play {
@@ -314,51 +343,15 @@
   .plain b { font-weight: 600; }
   .muted { color: var(--muted); }
 
-  /* Listen section grid & video cards */
-  .listen-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    max-width: 1000px;
-    margin-top: 1rem;
-  }
-  .video-card {
-    background: var(--ebony-2);
-    border: 1px solid var(--rule);
+  .watch {
+    display: block; max-width: 760px; text-decoration: none;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    background: linear-gradient(120deg, #3a150a, #7d3813);
     border-radius: 6px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
+    font-family: var(--serif); font-size: clamp(1.7rem, 4vw, 2.6rem); line-height: 1.1; color: #fbf0d4;
   }
-  .video-container {
-    position: relative;
-    width: 100%;
-    padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-    height: 0;
-    background: #000;
-  }
-  .video-container iframe {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-  }
-  .video-info {
-    padding: 1.2rem;
-  }
-  .video-info h3 {
-    font-family: var(--serif);
-    font-size: 1.4rem;
-    margin: 0 0 0.3rem;
-    color: var(--gold);
-  }
-  .video-info p {
-    margin: 0;
-    font-size: 0.95rem;
-    color: var(--muted);
-  }
+  .watch small { display: block; margin-top: 0.8rem; font-family: var(--sans); font-size: 1rem; color: #ecd9b0; }
+  .watch:hover { color: #fff; filter: brightness(1.12); }
 
   .contact-link { font-family: var(--serif); font-size: clamp(1.35rem, 3.2vw, 2.1rem); line-height: 1.15; word-break: break-word; }
 
@@ -459,6 +452,18 @@
   </section>
 
   <div class="violin-section violin" id="violin">
+    <div class="score-bg" id="score-bg" aria-hidden="true">
+      <img class="score-sys" src="score-1.webp" alt="" width="1821" height="491" loading="lazy" decoding="async" draggable="false">
+      <img class="score-sys" src="score-2.webp" alt="" width="1821" height="491" loading="lazy" decoding="async" draggable="false">
+      <img class="score-sys" src="score-3.webp" alt="" width="1821" height="491" loading="lazy" decoding="async" draggable="false">
+      <img class="score-sys" src="score-4.webp" alt="" width="1821" height="491" loading="lazy" decoding="async" draggable="false">
+      <img class="score-sys" src="score-5.webp" alt="" width="1821" height="491" loading="lazy" decoding="async" draggable="false">
+      <img class="score-sys" src="score-6.webp" alt="" width="1821" height="491" loading="lazy" decoding="async" draggable="false">
+      <img class="score-sys" src="score-7.webp" alt="" width="1821" height="491" loading="lazy" decoding="async" draggable="false">
+      <img class="score-sys" src="score-8.webp" alt="" width="1821" height="491" loading="lazy" decoding="async" draggable="false">
+      <div class="score-bar" id="score-bar"></div>
+      <div class="score-head" id="score-head"></div>
+    </div>
     <div class="violin-container">
       <div class="hero-violin-top">
         <button type="button" class="copy-btn play-music" id="play-music">Play Vincent's Music</button>
@@ -568,42 +573,14 @@
   </section>
 
   <section id="listen">
-      <h2>Listen</h2>
-      <div class="listen-grid">
-        <!-- 1. Sibelius Concerto -->
-        <div class="video-card">
-          <div class="video-container">
-            <iframe src="https://www.youtube.com/embed/PASTE_SIBELIUS_VIDEO_ID_HERE?si=q7Exsm4v20n_kYz8" title="Sibelius Violin Concerto" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
-          </div>
-          <div class="video-info">
-            <h3>Sibelius Concerto</h3>
-            <p>Violin Concerto in D minor, Op. 47</p>
-          </div>
-        </div>
-
-        <!-- 2. Bach Chaconne -->
-        <div class="video-card">
-          <div class="video-container">
-            <iframe src="https://www.youtube.com/embed/2mwYeuZi7tY?si=q7Exsm4v20n_kYz8&amp;start=55" title="Bach Chaconne" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
-          </div>
-          <div class="video-info">
-            <h3>Bach Chaconne</h3>
-            <p>Partita No. 2 in D minor, BWV 1004</p>
-          </div>
-        </div>
-
-        <!-- 3. Chamber Prokofiev -->
-        <div class="video-card">
-          <div class="video-container">
-              <iframe width="560" height="315" src="https://www.youtube.com/embed/2mwYeuZi7tY?si=q7Exsm4v20n_kYz8&amp;start=55" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-          </div>
-          <div class="video-info">
-            <h3>Chamber Prokofiev</h3>
-            <p>Live Chamber Performance</p>
-          </div>
-        </div>
-      </div>
-    </section>
+    <h2>Listen</h2>
+    <div>
+      <a class="watch" href="https://www.youtube.com/@VincentViolin" target="_blank" rel="noopener">
+        Watch Vincent on YouTube
+        <small>@VincentViolin</small>
+      </a>
+    </div>
+  </section>
 
   <section id="beyond">
     <video class="beyond-video" autoplay muted loop playsinline preload="auto" poster="DragonBoat-poster.jpg" aria-hidden="true">
@@ -685,6 +662,7 @@
     });
   });
 
+  // Fermer le menu si l'utilisateur clique en dehors des liens (sur le fond du drawer)
   drawer.addEventListener('click', function (e) {
     if (e.target === drawer) {
       drawer.classList.remove('open');
@@ -693,6 +671,7 @@
     }
   });
 
+  // Close drawer on Escape key for better keyboard navigation
   window.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && drawer.classList.contains('open')) {
       toggleDrawer();
@@ -741,6 +720,7 @@
   var MAXN = 24, MAXU = 0.75;
   var state = MIDI0.map(function () { return { a: 0, phase: Math.random() * 6.28, owner: null, n: 0, uf: 0, kn: 0, lv: 1 }; });
   var raf = null, last = 0, bowOff = 0, bowT = 0, hover = null, bowSpd = 0, demo = false;
+  /* A string is "user-owned" when the visitor (pointer/keyboard) is playing it, as opposed to the recording animation ('demo'). */
   function userOwned(s) { return s.owner !== null && String(s.owner).indexOf('demo') !== 0; }
 
   var IMG_W = 424, IMG_H = 1140;
@@ -778,6 +758,7 @@
     g.restore();
   }
   
+  /* Canvas draw optimized for Firefox (shadowBlur removed) */
   function draw() {
     var sc = G.sc, i, y;
     g.setTransform(G.dpr, 0, 0, G.dpr, 0, 0);
@@ -875,6 +856,7 @@
   }
   function kick() { if (!raf) { last = performance.now(); raf = requestAnimationFrame(frame); } }
 
+  /* Audio Synthesis Context */
   var ac, master, bodyIn, noiseBuf, wave, voices = [null, null, null, null];
   function audio() {
     if (ac) { if (ac.state === 'suspended') ac.resume(); return ac; }
@@ -1090,10 +1072,14 @@
     btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
   });
 
+  /* Recording-driven Violin Animation */
+  /* TRACK.l: loudness of the recording every 0.1 s.
+     SEGS: the solo violin line, [start s, end s, MIDI note, string 0-3 = G D A E], found by polyphonic transcription of the recording
+     (orchestra-only passages and non-solo pads removed) and fingered with a violin-aware string/position search. */
   var TRACK = {"l":[0.01,0.02,0.03,0.04,0.05,0.03,0.05,0.03,0.05,0.03,0.04,0.03,0.04,0.02,0.01,0.02,0.05,0.05,0.03,0.05,0.04,0.05,0.05,0.05,0.09,0.13,0.13,0.14,0.11,0.05,0.03,0.07,0.13,0.12,0.12,0.09,0.09,0.08,0.13,0.24,0.19,0.17,0.09,0.14,0.22,0.12,0.07,0.08,0.11,0.09,0.14,0.09,0.07,0.06,0.05,0.05,0.05,0.05,0.05,0.03,0.03,0.04,0.07,0.07,0.06,0.05,0.03,0.03,0.05,0.04,0.04,0.04,0.03,0.04,0.07,0.08,0.06,0.04,0.04,0.04,0.04,0.03,0.03,0.03,0.02,0.06,0.1,0.07,0.06,0.05,0.04,0.03,0.03,0.02,0.05,0.06,0.04,0.04,0.04,0.04,0.03,0.02,0.01,0.02,0.03,0.03,0.03,0.05,0.08,0.07,0.05,0.06,0.07,0.07,0.08,0.06,0.07,0.1,0.1,0.12,0.14,0.16,0.18,0.23,0.24,0.23,0.19,0.13,0.1,0.11,0.13,0.1,0.06,0.06,0.04,0.13,0.11,0.1,0.06,0.07,0.07,0.07,0.07,0.05,0.08,0.09,0.07,0.08,0.11,0.09,0.11,0.11,0.1,0.15,0.1,0.1,0.12,0.11,0.12,0.17,0.21,0.21,0.13,0.1,0.11,0.19,0.18,0.21,0.18,0.18,0.18,0.19,0.18,0.12,0.11,0.08,0.09,0.1,0.1,0.07,0.07,0.05,0.09,0.15,0.1,0.08,0.08,0.07,0.14,0.16,0.12,0.09,0.08,0.07,0.09,0.18,0.14,0.14,0.1,0.13,0.18,0.14,0.15,0.16,0.16,0.18,0.2,0.22,0.24,0.15,0.13,0.21,0.32,0.24,0.2,0.19,0.19,0.24,0.26,0.24,0.31,0.25,0.18,0.2,0.26,0.19,0.18,0.16,0.2,0.26,0.3,0.3,0.33,0.43,0.38,0.53,0.39,0.48,0.29,0.16,0.1,0.12,0.13,0.14,0.14,0.17,0.13,0.16,0.18,0.16,0.16,0.14,0.12,0.16,0.17,0.18,0.18,0.16,0.19,0.22,0.24,0.31,0.36,0.35,0.42,0.47,0.6,0.56,0.51,0.44,0.26,0.19,0.27,0.25,0.17,0.25,0.21,0.22,0.22,0.17,0.17,0.2,0.18,0.19,0.18,0.23,0.18,0.2,0.15,0.1,0.09,0.12,0.08,0.1,0.11,0.12,0.14,0.13,0.1,0.08,0.11,0.16,0.14,0.09,0.1,0.08,0.13,0.15,0.16,0.13,0.16,0.17,0.19,0.16,0.13,0.17,0.18,0.13,0.13,0.1,0.08,0.1,0.14,0.12,0.12,0.11,0.09,0.08,0.11,0.1,0.12,0.12,0.11,0.13,0.19,0.2,0.13,0.1,0.06,0.1,0.11,0.1,0.12,0.1,0.08,0.08,0.11,0.09,0.09,0.07,0.05,0.08,0.12,0.1,0.12,0.1,0.1,0.15,0.17,0.14,0.12,0.09,0.1,0.11,0.13,0.15,0.13,0.15,0.29,0.32,0.27,0.17,0.13,0.17,0.22,0.23,0.23,0.19,0.37,0.41,0.4,0.46,0.25,0.16,0.17,0.22,0.24,0.23,0.19,0.19,0.29,0.32,0.24,0.3,0.33,0.31,0.49,0.5,0.51,0.62,0.89,0.48,0.41,0.92,0.67,0.22,0.12,0.13,0.14,0.13,0.17,0.17,0.14,0.17,0.17,0.18,0.21,0.17,0.2,0.24,0.22,0.25,0.26,0.24,0.33,0.44,0.32,0.45,0.69,1.0,1.0,0.69,0.64,1.0,1.0,1.0,0.94,1.0,0.78,0.47,0.33,0.5,0.67,0.69,0.99,0.75,0.64,0.66,0.51,0.38,0.41,0.62,0.8,0.6,0.45,0.34,0.26,0.22,0.27,0.26,0.26,0.26,0.25,0.26,0.28,0.26,0.25,0.25,0.29,0.41,0.39,0.32,0.33,0.46,0.5,0.52,0.66,0.55,0.5,0.52,0.53,0.52,0.48,0.53,0.45,0.52,0.73,0.91,1.0,1.0,0.8,0.59,0.57,0.4,0.56,0.48,0.46,0.5,0.53,1.0,1.0,1.0,1.0,0.87,0.67,0.68,0.5,0.44,0.38,0.41,0.58,0.98,1.0,0.63,0.63,0.8,0.68,0.85,0.65,0.83,0.67,0.71,0.77,0.92,0.75,0.7,0.66,0.64,0.77,0.72,0.57,0.58,0.89,1.0,1.0,0.91,0.94,1.0,0.78,0.76,0.88,0.82,0.75,0.78,0.69,0.53,0.63,0.65,0.47,0.38,0.33,0.37,0.4,0.35,0.41,0.34,0.2,0.39,0.35,0.3,0.39,0.44,0.44,0.41,0.4,0.38,0.38,0.46,0.41,0.41,0.33,0.33,0.31,0.28,0.31,0.26,0.21,0.24,0.24,0.21,0.21,0.19,0.19,0.19,0.14,0.12,0.12,0.1,0.12,0.11,0.11,0.12,0.11,0.13,0.22,0.23,0.2,0.17,0.17,0.24,0.36,0.54,0.98,1.0,1.0,1.0,0.74,0.94,0.87,0.65,0.44,0.37,0.35,0.37,0.66,0.72,0.46,0.62,0.48,0.49,0.38,0.37,0.4,0.72,0.69,0.55,0.47,0.65,0.47,0.55,0.56,0.52,0.55,0.61,0.69,0.69,0.64,0.64,0.55,0.5,0.55,0.42,0.53,0.5,0.46,0.58,0.47,0.56,0.6,0.57,0.57,0.53,0.69,0.63,0.67,0.77,0.92,0.97,1.0,0.81,0.74,0.52,0.62,0.63,0.6,0.5,0.5,0.62,0.87,0.81,0.89,0.64,0.96,1.0,1.0,0.94,1.0,1.0,1.0,1.0,1.0,1.0,0.85,0.98,0.8,0.65,0.75,0.68,0.77,0.62,0.49,0.62,0.6,0.51,0.51,0.52,0.5,0.54,0.47,0.54,0.47,0.4,0.52,0.48,0.43,0.46,0.42,0.38,0.4,0.42,0.41,0.52,0.49,0.68,0.57,0.72,0.97,0.93,1.0,1.0,1.0,0.98,0.92,1.0,1.0,1.0,1.0,1.0,0.82,0.56,0.5,0.55,0.64,0.58,0.53,0.6,0.74,0.76,1.0,1.0,0.51,0.48,0.46,0.62,0.66,0.55,0.58,0.76,0.73,0.58,0.6,0.63,0.62,0.73,0.69,0.65,0.51,0.52,0.74,0.63,0.86,0.67,0.65,0.55,0.37,0.27,0.21,0.13,0.11,0.1,0.1,0.11,0.12,0.13,0.22,0.23,0.24,0.2,0.23,0.21]};
   var SEGS = [[11.064,12.91,79,3],[12.91,13.317,81,3],[13.317,16.858,74,2],[16.858,17.845,77,2],[17.845,18.077,76,2],[18.077,20.933,74,2],[20.933,21.513,81,3],[21.513,22.384,84,3],[22.384,22.732,83,3],[22.732,23.58,81,3],[23.58,23.824,80,3],[23.824,24.009,72,2],[24.009,24.149,69,2],[24.265,24.903,71,2],[24.903,25.704,86,3],[25.704,26.273,88,3],[26.273,27.202,84,3],[27.202,27.62,83,3],[27.62,28.561,81,3],[28.561,28.723,80,3],[33.193,33.367,77,3],[33.367,33.855,74,2],[33.855,34.644,77,2],[34.644,34.783,76,2],[34.783,34.958,74,2],[35.109,36.966,80,3],[36.966,37.256,74,2],[37.256,37.941,80,3],[37.941,38.185,74,2],[38.185,38.417,83,3],[38.417,39.16,84,3],[39.16,39.497,74,2],[39.497,40.832,81,3],[40.832,42.318,86,3],[42.318,42.841,88,3],[42.841,43.352,84,3],[43.352,43.7,83,3],[43.7,44.083,81,3],[44.083,44.582,80,3],[44.582,44.884,81,3],[44.884,45.128,72,2],[45.186,46.707,86,3],[46.707,47.009,72,2],[47.009,47.334,88,3],[47.334,47.926,89,3],[47.926,48.506,88,3],[48.506,48.994,86,3],[48.994,49.284,84,3],[49.284,49.575,86,3],[49.575,49.958,88,3],[50.109,50.654,81,3],[50.654,51.455,86,3],[51.455,52.21,84,3],[52.21,52.709,77,2],[52.941,53.65,82,3],[53.65,54.497,81,3],[55.252,55.995,79,3],[55.995,56.134,77,3],[56.134,56.25,76,2],[56.25,58.526,75,2],[58.526,59.501,70,2],[60.755,61.893,67,1],[62.032,62.88,58,0],[66.107,66.293,62,1],[66.293,66.386,64,1],[66.386,67.257,65,1],[67.524,68.046,67,1],[68.081,68.627,69,1],[68.627,70.693,70,1],[70.949,71.761,58,0],[72.957,73.108,62,1],[73.108,73.259,64,1],[73.259,74.106,65,1],[74.106,74.199,64,1],[74.199,74.408,62,1],[74.408,75.256,77,2],[75.256,75.488,65,1],[75.709,75.825,79,3],[75.825,75.999,77,3],[75.999,76.173,76,2],[76.173,76.463,81,3],[76.463,77.113,65,1],[77.38,77.787,86,3],[77.787,77.903,56,0]];
   var demoStr = -1, bowDir = 1, quiet = 0;
-  var LEAD = 0.15;
+  var LEAD = 0.15;   /* seconds: the animation shows each note slightly before it is heard */
   function segAt(t) {
     var lo = 0, hi = SEGS.length - 1;
     while (lo <= hi) {
@@ -1108,11 +1094,13 @@
   }
   function demoUpdate(dt) {
     if (audioEl.paused) return;
+    scoreAt(audioEl.currentTime);
     var k = Math.min(TRACK.l.length - 1, Math.floor(audioEl.currentTime * 10));
     var lv = TRACK.l[k], seg = segAt(audioEl.currentTime + LEAD), m = seg ? seg[2] : 0;
     if (m) {
       var i = seg[3], n = Math.min(MAXN, Math.max(0, m - MIDI0[i]));
       if (userOwned(state[i])) {
+        /* The visitor is playing this string: their note takes priority over the recording's animation */
         if (demoStr >= 0) demoRelease();
       } else {
         if (i !== demoStr) { demoRelease(); demoStr = i; state[i].n = n; state[i].uf = uFromN(n); }
@@ -1126,17 +1114,38 @@
     if (!reduce) {
       var sp = 14 + 150 * Math.min(1, lv * 1.6);
       if (m) bowOff += bowDir * sp * dt;
-      else bowOff += (0 - bowOff) * Math.min(1, dt * 3);
+      else bowOff += (0 - bowOff) * Math.min(1, dt * 3);   /* orchestra only: the soloist's bow rests */
       if (bowOff > 56) { bowOff = 56; bowDir = -1; } else if (bowOff < -56) { bowOff = -56; bowDir = 1; }
     }
   }
+  /* Sheet music sync: bar positions (fraction of image width) for each system, and an estimate of when each bar is heard.
+     Bar 1 starts about 2.96 s into the recording, one bar lasts about 2.32 s (checked against the transcribed solo line). */
+  var SCORE_BARS = [[0.1977,0.469,0.724,0.9744],[0.0938,0.3109,0.5295,0.7527,0.9729],[0.0938,0.3109,0.5295,0.7527,0.9729],[0.0938,0.376,0.6643,0.9713],[0.0969,0.2806,0.4674,0.6302,0.8,0.9775],[0.0969,0.2388,0.3992,0.545,0.6984,0.8333,0.976],[0.0953,0.2426,0.3977,0.5543,0.7589,0.976],[0.0953,0.3062,0.5372,0.6938,0.8349,0.976]];
+  var SC_T0 = 2.96, SC_BAR = 2.32, scoreCur = -1;
+  var scoreEl = document.getElementById('score-bg'), scoreSys = [].slice.call(scoreEl.querySelectorAll('.score-sys'));
+  var scoreBar = document.getElementById('score-bar'), scoreHead = document.getElementById('score-head');
+  function scoreAt(t) {
+    var pos = (t - SC_T0) / SC_BAR, started = pos >= 0, bar = started ? Math.floor(pos) : 0, frac = started ? pos - bar : 0;
+    var si = 0, last = SCORE_BARS.length - 1;
+    while (si < last && bar >= SCORE_BARS[si].length - 1) { bar -= SCORE_BARS[si].length - 1; si++; }
+    var xs = SCORE_BARS[si];
+    if (bar > xs.length - 2) { bar = xs.length - 2; frac = 1; }
+    if (si !== scoreCur) {
+      scoreSys.forEach(function (im, j) { im.classList.toggle('on', j === si); });
+      scoreCur = si;
+    }
+    var x0 = xs[bar], x1 = xs[bar + 1];
+    scoreBar.style.left = (x0 * 100) + '%'; scoreBar.style.width = ((x1 - x0) * 100) + '%';
+    scoreHead.style.left = ((x0 + (x1 - x0) * frac) * 100) + '%';
+    scoreBar.classList.toggle('on', started); scoreHead.classList.toggle('on', started);
+  }
   function setPlayLabel(on) { playMusicBtn.textContent = on ? "Pause Vincent's Music" : "Play Vincent's Music"; }
   function startDemo() {
-    demo = true; isDemo = true; quiet = 0; kick();
+    demo = true; isDemo = true; quiet = 0; scoreEl.classList.add('on'); scoreEl.parentNode.classList.add('score-on'); kick();
   }
   function stopDemo() {
     if (!demo) return;
-    demo = false; isDemo = false;
+    demo = false; isDemo = false; scoreEl.classList.remove('on'); scoreEl.parentNode.classList.remove('score-on');
     if (!audioEl.paused) audioEl.pause();
     demoRelease(); setPlayLabel(false);
     readout.textContent = ''; lastText = '';
@@ -1187,6 +1196,7 @@
 })();
 </script>
 <script>
+// Pause the Dragon Boat background when off-screen to save battery/bandwidth
 (function () {
   var v = document.querySelector('.beyond-video');
   if (!v || !('IntersectionObserver' in window)) return;
