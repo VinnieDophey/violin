@@ -287,6 +287,7 @@
     font-family: var(--serif); font-weight: 500; font-size: 2.6rem; line-height: 1.05; letter-spacing: -0.005em;
     margin: 0; position: sticky; top: 5rem; align-self: start;
   }
+  main h2 .sub-heading { display: block; margin-top: 0.55rem; font-size: 1.45rem; font-style: italic; font-weight: 500; line-height: 1.2; letter-spacing: 0; color: var(--gold); }
   /* Beyond the violin: Dragon Boat video background (same dark treatment as hero) */
   #beyond { position: relative; overflow: hidden; background: var(--ebony); isolation: isolate; }
   .beyond-video {
@@ -334,6 +335,28 @@
   .rep dt:first-child { margin-top: 0; }
   .rep dd { margin: 0.2rem 0 0; }
 
+  .recog { min-width: 0; }
+  .recog-cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .recog .col { padding: 0.2rem clamp(1rem, 2vw, 1.9rem); border-left: 1px solid var(--rule); }
+  .recog .col:first-child { padding-left: 0; border-left: 0; }
+  .recog .col:last-child { padding-right: 0; }
+  .recog .icon { width: 3rem; height: 3rem; border-radius: 50%; border: 1px solid rgba(227,169,77,0.55); display: flex; align-items: center; justify-content: center; margin: 0 0 1rem; color: var(--gold); }
+  .recog .icon svg { width: 1.45rem; height: 1.45rem; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .recog h3 { margin: 0 0 1.1rem; font-family: var(--serif); font-weight: 500; font-size: 1.65rem; line-height: 1.12; color: #fbf0d4; }
+  .recog ul { list-style: none; margin: 0; padding: 0; }
+  .recog li { padding: 0 0 1rem; margin: 0 0 1rem; border-bottom: 1px solid rgba(227,169,77,0.14); line-height: 1.45; }
+  .recog li:last-child { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
+  .recog li b { text-wrap: balance; display: block; font-weight: 600; font-size: 0.98rem; color: #fbf0d4; }
+  .recog li span { display: block; margin-top: 0.15rem; font-size: 0.88rem; color: var(--muted); }
+  .recog-foot { display: flex; justify-content: flex-end; margin-top: 2rem; }
+  .more-link { color: var(--gold); font-weight: 600; font-size: 0.9rem; letter-spacing: 0.04em; text-decoration: none; border-bottom: 1px solid transparent; transition: border-color 0.2s ease; }
+  .more-link:hover, .more-link:focus-visible { border-bottom-color: var(--gold); }
+  @media (max-width: 900px) {
+    .recog-cols { grid-template-columns: 1fr; }
+    .recog .col, .recog .col:first-child, .recog .col:last-child { padding: 1.6rem 0; border-left: 0; border-top: 1px solid var(--rule); }
+    .recog .col:first-child { border-top: 0; padding-top: 0; }
+    .recog-foot { justify-content: flex-start; }
+  }
   .ledger { max-width: 72ch; }
   .ledger .row { display: grid; grid-template-columns: 9rem 1fr; gap: 1rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); }
   .ledger .row:first-child { border-top: 0; padding-top: 0; }
@@ -422,7 +445,7 @@
     <div class="nav-links">
       <a href="#about">About</a>
       <a href="#training">Training</a>
-      <a href="#awards">Awards</a>
+      <a href="#awards">Recognition</a>
       <a href="#stage">Stage</a>
       <a href="#listen">Listen</a>
       <a href="#contact">Contact</a>
@@ -439,7 +462,7 @@
 <div class="menu-drawer" id="menu-drawer">
   <a href="#about">About</a>
   <a href="#training">Training</a>
-  <a href="#awards">Awards</a>
+  <a href="#awards">Recognition</a>
   <a href="#stage">Stage</a>
   <a href="#listen">Listen</a>
   <a href="#contact">Contact</a>
@@ -476,7 +499,7 @@
   </section>
 
   <div class="violin-section violin" id="violin" role="region" aria-labelledby="violin-title">
-    <h2 class="violin-title" id="violin-title">Listen and Play: Excerpt Highlights</h2>
+    <h2 class="violin-title" id="violin-title">Listen and Play <span class="sub-heading">Featured Excerpts</span></h2>
     <div class="violin-container">
       <div class="score-bg" id="score-bg" aria-hidden="true">
         <img class="score-sys" src="score-1.webp" alt="" width="1821" height="491" loading="lazy" decoding="async" draggable="false">
@@ -535,49 +558,38 @@
   </section>
 
   <section id="awards">
-    <h2>Awards</h2>
-    <div class="ledger">
-      <div class="row">
-        <h3>2025 to 2026</h3>
+    <h2>Recognition &amp; Distinctions</h2>
+    <div class="recog">
+    <div class="recog-cols">
+      <div class="col">
+        <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="9" r="5.5"/><path d="M8.5 13.5 7 21l5-2.8 5 2.8-1.5-7.5"/></svg></div>
+        <h3>Major Competition Results</h3>
         <ul>
-          <li>Juilliard Summer Music, New York: highlight concert performance</li>
-          <li>Canadian Music Competition, Strings 15 to 18: 3rd place</li>
-          <li>Canadian International Music Festival, Solo: 1st place</li>
-          <li>Sherbrooke Music Competition, Solo 12 to 16: 1st place</li>
-          <li>Ontario Music Festival Association, Strings: 2nd place with scholarship</li>
-          <li>NCR Kiwanis Music Festival: Kinsmen Club Shield Trophy, Open Strings Solo, 1st place (2025 and again in 2026)</li>
-          <li>Aruna-Rupa Anantaraman Trophy, Senior Chamber, with his quartet (2026)</li>
-          <li>Conservatoire de musique de Gatineau, Bravissimo Competition: winner</li>
-          <li>Laurentian Chapter I.O.D.E. Marion Ruddick Award and Glebe St James Award for Provincial Rep scholarships</li>
+          <li><b>3rd Place, Strings 15 to 18, age 15</b><span>Canadian Music Competition (2025)</span></li>
+          <li><b>1st Place, Solo</b><span>Canadian International Music Festival (2025 and 2026)</span></li>
+          <li><b>Best Musicianship Trophy and Kinsmen Club Shield Open Strings Solo Trophy</b><span>NCR Kiwanis Music Festival (2025 and 2026)</span></li>
         </ul>
       </div>
-      <div class="row">
-        <h3>2024 to 2025</h3>
+      <div class="col">
+        <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg></div>
+        <h3>Scholarship &amp; Bursaries</h3>
         <ul>
-          <li>Ottawa Kiwanis Music Festival: Best Musicianship Trophy across all string divisions</li>
-          <li>Ottawa Kiwanis Music Festival: 1st place in all three ARCT-level classes (Violin Concerto, Sonata and List C)</li>
-          <li>Canadian International Music Festival, Solo: 1st place</li>
-          <li>Ontario Music Festival Association provincial competition: 3rd place with scholarship</li>
-          <li>Laurentian Junior Music Club: Best Strings Player Trophy</li>
-          <li>Conservatoire de musique de Gatineau: top string student scholarship</li>
+          <li><b>Marion Ruddick and Glebe St James Awards</b><span>Laurentian Chapter I.O.D.E., Provincial Rep scholarships (2026)</span></li>
+          <li><b>Top String Student Scholarship</b><span>Conservatoire de musique de Gatineau (2025)</span></li>
+          <li><b>Bursaries</b><span>Young String Performers' Foundation and Conservatoire de musique du Quebec (2022)</span></li>
         </ul>
       </div>
-      <div class="row">
-        <h3>2023</h3>
+      <div class="col">
+        <div class="icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m2 9 10-5 10 5-10 5z"/><path d="M6 11.5V16c0 1.5 2.7 3 6 3s6-1.5 6-3v-4.5"/><path d="M22 9v6"/></svg></div>
+        <h3>Training &amp; Summer Music</h3>
         <ul>
-          <li>Conservatoire de musique de Gatineau, Bravissimo Competition: winner</li>
-          <li>Ontario Music Festival Association: 2nd place with scholarship (Upper Strings), 1st place with scholarship (Upper String Duets)</li>
-          <li>Ottawa Kiwanis Music Festival: 1st place with the Jackie Morrison scholarship</li>
-          <li>Laurentian Junior Music Club: Edith Orton Special Achievement Trophy and scholarship</li>
+          <li><b>Highlight Concert Performance</b><span>Juilliard Summer Music, New York (2026)</span></li>
+          <li><b>Associate Diploma (ARCT), Violin Performance</b><span>Royal Conservatory of Music (2025)</span></li>
+          <li><b>Summer Programs</b><span>Domaine Forget de Charlevoix and University of Ottawa Summer String Academy</span></li>
         </ul>
       </div>
-      <div class="row">
-        <h3>2022</h3>
-        <ul>
-          <li>Bursaries from the Young String Performers' Foundation and the Conservatoire de musique du Quebec</li>
-          <li>Musicians' Association of Ottawa-Gatineau scholarship for violin performance at the Ottawa Kiwanis Music Festival</li>
-        </ul>
-      </div>
+    </div>
+    <p class="recog-foot"><a class="more-link" href="awards.html">View complete awards history <span aria-hidden="true">&rarr;</span></a></p>
     </div>
   </section>
 
