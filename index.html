@@ -386,6 +386,53 @@
   .stage-cbc b { display: inline-block; margin-right: 0.6rem; padding: 0.15rem 0.55rem; border: 1px solid rgba(227,169,77,0.55); border-radius: 3px; font-size: 0.72rem; letter-spacing: 0.14em; color: var(--gold); }
   @media (max-width: 700px) { .stage-map .dot .lbl { display: none; } .stage-map .dot .pt { r: 6.5px; } .map-wrap { padding: 0.25rem; } }
   @media (prefers-reduced-motion: reduce) { .stage-map .arc.on, .stage-map .dot.on .halo { animation: none; } }
+  /* Hero reacts to the music */
+  .hero-overlay::after { content: ""; position: absolute; inset: 0; background: rgba(12, 8, 6, 0.38); opacity: 0; transition: opacity 1.2s ease; }
+  body.music-on .hero-overlay::after { opacity: 1; }
+  .hero-score { position: absolute; z-index: 1; right: -3vw; bottom: 10%; width: min(900px, 62vw); height: auto; opacity: 0; transition: opacity 1.4s ease; pointer-events: none; user-select: none; }
+  body.music-on .hero-score { opacity: 0.13; }
+  @media (max-width: 700px) { .hero-score { display: none; } }
+  .hero-text { transition: transform 1.2s ease; }
+
+  /* Quote band */
+  .quote-band { background: var(--ebony-2); border-top: 1px solid var(--rule); padding: clamp(4.5rem, 11vw, 9rem) clamp(1.25rem, 5vw, 4rem); text-align: center; }
+  .quote-band .orn { display: block; width: 3.4rem; height: 1px; margin: 0 auto 2rem; background: var(--gold); position: relative; opacity: 0.8; }
+  .quote-band .orn::after { content: ""; position: absolute; left: 50%; top: 50%; width: 9px; height: 9px; background: var(--ebony-2); border: 1px solid var(--gold); transform: translate(-50%, -50%) rotate(45deg); }
+  .quote-band blockquote { margin: 0 auto; max-width: 20ch; font-family: var(--serif); font-style: italic; font-weight: 500; font-size: clamp(2.3rem, 6.4vw, 4.8rem); line-height: 1.1; letter-spacing: -0.005em; color: #fbf0d4; text-wrap: balance; }
+  .quote-band blockquote em { color: var(--gold); }
+  .quote-band .reveal { opacity: 0; transform: translateY(18px); transition: opacity 1.1s ease, transform 1.1s ease; }
+  .quote-band.in .reveal { opacity: 1; transform: none; }
+
+  /* Numbers */
+  .stats { background: var(--ebony); border-top: 1px solid var(--rule); padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.25rem, 5vw, 4rem); }
+  .stats ul { list-style: none; margin: 0 auto; padding: 0; max-width: 1000px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .stats li { text-align: center; padding: 0.4rem clamp(0.8rem, 2.5vw, 2.2rem); border-left: 1px solid var(--rule); }
+  .stats li:first-child { border-left: 0; }
+  .stats .num { display: block; font-family: var(--serif); font-weight: 500; font-size: clamp(2.8rem, 6.4vw, 4.8rem); line-height: 1; color: var(--gold); font-variant-numeric: lining-nums tabular-nums; }
+  .stats .lab { display: block; margin: 0.8rem auto 0; max-width: 24ch; font-size: 0.78rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); line-height: 1.5; }
+  @media (max-width: 700px) {
+    .stats ul { grid-template-columns: 1fr; gap: 1.8rem; }
+    .stats li, .stats li:first-child { border-left: 0; border-top: 1px solid var(--rule); padding-top: 1.6rem; }
+    .stats li:first-child { border-top: 0; padding-top: 0; }
+  }
+
+  /* Now playing pill */
+  .now-playing { position: fixed; z-index: 60; left: clamp(0.75rem, 2.5vw, 1.5rem); bottom: clamp(0.75rem, 2.5vw, 1.5rem); display: flex; align-items: center; gap: 0.75rem; max-width: calc(100vw - 1.5rem); padding: 0.45rem 1.1rem 0.45rem 0.45rem; border: 1px solid rgba(227,169,77,0.55); border-radius: 999px; background: rgba(23,16,12,0.88); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); box-shadow: 0 10px 30px rgba(0,0,0,0.45); transform: translateY(140%); opacity: 0; pointer-events: none; transition: transform 0.45s cubic-bezier(.2,.8,.2,1), opacity 0.35s ease; }
+  .now-playing.show { transform: none; opacity: 1; pointer-events: auto; }
+  .now-playing button { flex: none; width: 2.5rem; height: 2.5rem; border-radius: 50%; border: 0; background: var(--gold); color: #1b120d; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+  .now-playing button svg { width: 1.05rem; height: 1.05rem; fill: currentColor; }
+  .now-playing .ic-play { display: none; margin-left: 2px; }
+  .now-playing.paused .ic-play { display: block; }
+  .now-playing.paused .ic-pause { display: none; }
+  .now-playing a { display: block; min-width: 0; text-decoration: none; line-height: 1.25; }
+  .now-playing .np-k { display: block; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); }
+  .now-playing .np-t { display: block; font-size: 0.88rem; font-weight: 500; color: #fbf0d4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .now-playing .eq { flex: none; display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+  .now-playing .eq i { width: 3px; background: var(--gold); border-radius: 1px; height: 30%; animation: eq 0.9s ease-in-out infinite; }
+  .now-playing .eq i:nth-child(2) { animation-delay: -0.3s; } .now-playing .eq i:nth-child(3) { animation-delay: -0.6s; }
+  .now-playing.paused .eq i { animation: none; height: 30%; }
+  @keyframes eq { 0%,100% { height: 25%; } 50% { height: 100%; } }
+  @media (prefers-reduced-motion: reduce) { .now-playing .eq i { animation: none; } .quote-band .reveal { opacity: 1; transform: none; transition: none; } .hero-overlay::after, .hero-score { transition: none; } }
   .ledger { max-width: 72ch; }
   .ledger .row { display: grid; grid-template-columns: 9rem 1fr; gap: 1rem; padding: 1.5rem 0; border-top: 1px solid var(--rule); }
   .ledger .row:first-child { border-top: 0; padding-top: 0; }
@@ -466,6 +513,7 @@
   }
   @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
 </style>
+<noscript><style>.quote-band .reveal { opacity: 1; transform: none; }</style></noscript>
 </head>
 <body>
 
@@ -503,16 +551,22 @@
   </video>
   
   <div class="hero-overlay"></div>
+  <img class="hero-score" id="hero-score" src="score-1.webp" alt="" width="1821" height="491" decoding="async" aria-hidden="true" draggable="false">
 
   <div class="hero-text">
     <p class="eyebrow">Violinist <span aria-hidden="true">·</span> Soloist <span aria-hidden="true">·</span> Chamber Musician</p>
     <h1>Vincent<br>Pham</h1>
-    <p class="tag">&ldquo;Music is not to hear, it is to feel.&rdquo;</p>
+    <p class="tag">From Ottawa, Ontario.</p>
     <a href="#violin" class="copy-btn" id="hero-play-btn">Listen and Play on Vincent's Violin</a>
   </div>
 </header>
 
 <main>
+  <div class="quote-band" id="quote-band">
+    <span class="orn reveal" aria-hidden="true"></span>
+    <blockquote class="reveal">Music is not to hear, it is to <em>feel</em>.</blockquote>
+  </div>
+
   <section id="about">
     <h2>About</h2>
     <div class="about-grid">
@@ -526,6 +580,14 @@
       </figure>
     </div>
   </section>
+
+  <div class="stats" id="stats" aria-label="Vincent in numbers">
+    <ul>
+      <li><span class="num" data-count="20000" data-prefix="$" data-suffix="+">$20,000+</span><span class="lab">Raised for local food banks and refugee initiatives</span></li>
+      <li><span class="num" data-count="5" data-suffix="+">5+</span><span class="lab">Years performing benefit concerts around Ottawa</span></li>
+      <li><span class="num" data-count="13">13</span><span class="lab">String orchestras led as concertmaster</span></li>
+    </ul>
+  </div>
 
   <div class="violin-section violin" id="violin" role="region" aria-labelledby="violin-title">
     <h2 class="violin-title" id="violin-title">Listen and Play <span class="sub-heading">Featured Excerpts</span></h2>
@@ -733,6 +795,15 @@
     </div>
   </section>
 </main>
+
+<div class="now-playing" id="now-playing" aria-live="polite">
+  <button type="button" id="np-toggle" aria-label="Pause Vincent's music">
+    <svg class="ic-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 4h4v16H6zM14 4h4v16h-4z"/></svg>
+    <svg class="ic-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>
+  </button>
+  <a href="#violin"><span class="np-k">Now playing</span><span class="np-t">Sibelius, Violin Concerto, mvt. I</span></a>
+  <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+</div>
 
 <footer>© <span id="year">2026</span> Vincent Pham</footer>
 
@@ -1243,6 +1314,7 @@
     if (si !== scoreCur) {
       scoreSys.forEach(function (im, j) { im.classList.toggle('on', j === si); });
       scoreCur = si;
+      var hs = document.getElementById('hero-score'); if (hs) hs.src = 'score-' + (si + 1) + '.webp';
     }
     var x0 = xs[bar], x1 = xs[bar + 1];
     scoreBar.style.left = (x0 * 100) + '%'; scoreBar.style.width = ((x1 - x0) * 100) + '%';
@@ -1251,11 +1323,11 @@
   }
   function setPlayLabel(on) { playMusicBtn.textContent = on ? "Pause Vincent's Music" : "Play Vincent's Music"; }
   function startDemo() {
-    demo = true; isDemo = true; quiet = 0; scoreEl.classList.add('on'); document.getElementById('violin').classList.add('score-on'); kick();
+    demo = true; isDemo = true; quiet = 0; scoreEl.classList.add('on'); document.getElementById('violin').classList.add('score-on'); document.body.classList.add('music-on'); if (window.__np) window.__np(); kick();
   }
   function stopDemo() {
     if (!demo) return;
-    demo = false; isDemo = false; scoreEl.classList.remove('on'); document.getElementById('violin').classList.remove('score-on');
+    demo = false; isDemo = false; scoreEl.classList.remove('on'); document.getElementById('violin').classList.remove('score-on'); document.body.classList.remove('music-on'); if (window.__np) window.__np();
     if (!audioEl.paused) audioEl.pause();
     demoRelease(); setPlayLabel(false);
     readout.textContent = ''; lastText = '';
@@ -1279,7 +1351,7 @@
     triggerPlayMusic();
   });
 
-  audioEl.addEventListener('ended', function () { stopDemo(); audioEl.currentTime = 0; });
+  audioEl.addEventListener('ended', function () { stopDemo(); audioEl.currentTime = 0; if (window.__np) window.__np(); });
   audioEl.addEventListener('pause', function () { if (demo) stopDemo(); });
 
   function placeControls() {
@@ -1334,6 +1406,45 @@
     d.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(d.dataset.k); } });
   });
   select('ny');
+})();
+</script>
+<script>
+/* Now-playing pill, quote reveal, count-up numbers */
+(function () {
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var pill = document.getElementById('now-playing'), tog = document.getElementById('np-toggle'),
+      audio = document.getElementById('audio-sibelius'), vio = document.getElementById('violin'), playBtn = document.getElementById('play-music');
+  var violinVisible = false;
+  function update() {
+    var playing = !audio.paused, started = audio.currentTime > 0.2 && !audio.ended;
+    pill.classList.toggle('show', (playing || started) && !violinVisible);
+    pill.classList.toggle('paused', !playing);
+    tog.setAttribute('aria-label', playing ? "Pause Vincent's music" : "Resume Vincent's music");
+  }
+  window.__np = function () { setTimeout(update, 0); };
+  ['play', 'pause', 'ended', 'seeked'].forEach(function (e) { audio.addEventListener(e, update); });
+  tog.addEventListener('click', function () { playBtn.click(); });
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(function (en) { violinVisible = en[0].isIntersecting; update(); }, { threshold: 0.15 }).observe(vio);
+  }
+  /* quote */
+  var qb = document.getElementById('quote-band');
+  if ('IntersectionObserver' in window && !reduce) {
+    var qo = new IntersectionObserver(function (en) { if (en[0].isIntersecting) { qb.classList.add('in'); qo.disconnect(); } }, { threshold: 0.35 });
+    qo.observe(qb);
+  } else qb.classList.add('in');
+  /* numbers */
+  var nums = [].slice.call(document.querySelectorAll('.stats .num'));
+  function fmt(n) { return n.toLocaleString('en-CA'); }
+  function run(el) {
+    var end = +el.dataset.count, pre = el.dataset.prefix || '', suf = el.dataset.suffix || '', t0 = null, dur = 1500;
+    function f(t) { if (t0 === null) t0 = t; var k = Math.min(1, (t - t0) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = pre + fmt(Math.round(end * e)) + suf; if (k < 1) requestAnimationFrame(f); }
+    el.textContent = pre + '0' + suf; requestAnimationFrame(f);
+  }
+  if ('IntersectionObserver' in window && !reduce) {
+    var so = new IntersectionObserver(function (en) { en.forEach(function (x) { if (x.isIntersecting) { run(x.target); so.unobserve(x.target); } }); }, { threshold: 0.6 });
+    nums.forEach(function (n) { so.observe(n); });
+  }
 })();
 </script>
 </body>
