@@ -340,6 +340,14 @@
   .body p { margin: 0 0 1.15em; }
   .body p:last-child { margin-bottom: 0; }
 
+  .about-lead { font-size: 1.12rem; line-height: 1.65; margin: 0 0 1.6rem; }
+  .about-sub { font-family: var(--sans, 'Plus Jakarta Sans', system-ui, sans-serif); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold); margin: 1.8rem 0 0.7rem; }
+  .about-say, .about-hl { list-style: none; margin: 0; padding: 0; }
+  .about-say li { padding: 0.7rem 0 0.7rem 1rem; border-left: 2px solid rgba(227,169,77,0.55); margin-bottom: 0.6rem; line-height: 1.6; }
+  .about-say b { font-family: var(--serif); font-style: italic; font-size: 1.15rem; font-weight: 600; color: #fbf0d4; margin-right: 0.3rem; }
+  .about-hl li { display: grid; grid-template-columns: 4.2rem 1fr; gap: 0.9rem; padding: 0.6rem 0; border-top: 1px solid var(--rule); line-height: 1.5; }
+  .about-hl li:last-child { border-bottom: 1px solid var(--rule); }
+  .about-hl span { color: var(--gold); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.06em; padding-top: 0.1rem; }
   .about-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(240px, 320px); gap: clamp(1.5rem, 4vw, 3.5rem); align-items: start; max-width: 76ch; }
   
   /* Portrait Photo Styling */
@@ -616,9 +624,8 @@
     <h2>About</h2>
     <div class="about-grid">
       <div class="body">
-        <p>Vincent Pham is a 16-year-old violinist from Ottawa, Ontario, and a student in the International Baccalaureate program. He is in the studio of Prof. Michael Van der Sloot and the University of Ottawa Pre-College Program, is enrolled at the Conservatoire de musique de Gatineau with Marjolaine Lambert and Tobie Slippert, and holds the Associate Diploma (ARCT) from the Royal Conservatory of Music.</p>
-        <p>In 2025 he placed third in the Strings 15 to 18 category of the Canadian Music Competition, competing at age 15. He has appeared as soloist and concertmaster with the Conservatoire de musique de Gatineau and the Vyhovskyi Senior Strings, and plays chamber music in a quartet that won the Aruna-Rupa Anantaraman Trophy for Senior Chamber in 2026. In summer 2026 he attended Juilliard Summer Music in New York, with private lessons, masterclasses and a highlight concert performance.</p>
-        <p>For more than five years, Vincent has performed in concerts around Ottawa that have raised over $20,000 for local food banks and refugee initiatives. Away from music, he races dragon boats and is training for the Ottawa Marathon.</p>
+        <p class="about-lead">Vincent Pham is a 16-year-old violinist from Ottawa whose experience spans solo performance, chamber music and concertmaster leadership. He has been praised in masterclasses for his musicality and his analytical approach to music, particularly his attention to a piece’s structure and phrasing and how these elements shape his interpretation.</p>
+        <p>He is in the studio of Prof. Michael Van der Sloot and attended the Conservatoire de musique de Gatineau with Marjolaine Lambert and Tobie Slippert. He studied at Juilliard Summer Music in New York in 2026 and was selected to perform in the highlight concert. In 2025, at age 15, he was a top prize winner in the Strings 15 to 18 category of the Canadian Music Competition. He also holds the Associate Diploma (ARCT) from the Royal Conservatory of Music.</p>
       </div>
       <figure class="portrait">
         <img src="vincent2.jpg" alt="Vincent Pham smiling with his violin" width="1000" height="1250" loading="lazy">
