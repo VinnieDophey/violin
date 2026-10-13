@@ -1319,7 +1319,7 @@
   var scoreBar = document.getElementById('score-bar'), scoreHead = document.getElementById('score-head');
   /* Two pieces share the violin: Sibelius (linear bar timing) and the Bach Chaconne (bar times measured from the rubato recording, mm. 106-120) */
   var PIECES = {
-    sib: { audio: audioEl, btn: playMusicBtn, track: TRACK, segs: SEGS, bars: SCORE_BARS, img0: 0, name: "Vincent's Sibelius", title: 'Sibelius, Violin Concerto, mvt. I', pos: function (t) { return t < SC_T0 ? -1 : (t - SC_T0) / SC_BAR; } },
+    sib: { audio: audioEl, btn: playMusicBtn, track: TRACK.l, segs: SEGS, bars: SCORE_BARS, img0: 0, name: "Vincent's Sibelius", title: 'Sibelius, Violin Concerto, mvt. I', pos: function (t) { return t < SC_T0 ? -1 : (t - SC_T0) / SC_BAR; } },
     cha: { audio: document.getElementById('audio-chaconne'), btn: chaBtn, track: CHA.l, segs: CHA.segs, bars: CHA.bars, img0: 8, name: "Bach's Chaconne", title: 'Bach, Chaconne, mm. 106\u2013120',
       pos: function (t) {
         var T = CHA.t; if (t < T[0]) return -1;
